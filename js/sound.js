@@ -1,3 +1,28 @@
+let playing = {};
+window.addEventListener('keydown', (event) => {
+  let key = document.querySelector(`[data-key='${event.keyCode}']`);
+  if (!key || playing[event.keyCode]) {
+    return;
+  }
+  playing[event.keyCode] = true;
+  let audioCtx = new AudioContext();
+  let oscillatorNode = audioCtx.createOscillator();
+  let gainNode = audioCtx.createGain();
+
+  oscillatorNode.frequency.value = noteValues[key.dataset.code];
+  oscillatorNode.type = 'triangle';
+  oscillatorNode.connect(gainNode);
+
+  gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+  gainNode.connect(audioCtx.destination);
+
+  oscillatorNode.start(audioCtx.currentTime);
+  window.addEventListener('keyup', (event) => {
+    oscillatorNode.stop(audioCtx.currentTime + 0.2);
+    playing[event.keyCode] = false;
+  });
+});
+
 let noteValues = {
   C0: 16.35,
   'C#0': 17.32,
@@ -137,27 +162,3 @@ let noteValues = {
   B7: 3951.07,
   C8: 4186.01,
 };
-let check;
-window.addEventListener('keydown', (event) => {
-  if (check) {
-    return;
-  }
-  check = true;
-  let audioCtx = new AudioContext();
-  let oscillatorNode = audioCtx.createOscillator();
-  let gainNode = audioCtx.createGain();
-  let key = document.querySelector(`[data-key='${event.keyCode}']`);
-
-  oscillatorNode.frequency.value = noteValues[key.dataset.code];
-  oscillatorNode.type = 'triangle';
-  oscillatorNode.connect(gainNode);
-
-  gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-  gainNode.connect(audioCtx.destination);
-
-  oscillatorNode.start(audioCtx.currentTime);
-  window.addEventListener('keyup', (event) => {
-    oscillatorNode.stop(audioCtx.currentTime + 0.2);
-    check = false;
-  });
-});
