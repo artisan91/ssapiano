@@ -1,3 +1,69 @@
+// 소리 생성
+var context;
+var o1;
+var o2;
+var g1;
+var g2;
+var f1 = 440.0
+var f2 = 392.0
+
+var pedal = 1;
+
+// gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+
+function playex1(){
+  // 객체에 
+  context = new AudioContext()  
+  o1 = context.createOscillator()
+  o1.type = "square"
+  
+  g1 = context.createGain()
+  o1.connect(g1)
+  g1.gain.setValueAtTime(0.05, context.currentTime)
+  o1.frequency.value = f1
+  g1.connect(context.destination)
+  o1.start(0)
+}
+
+function stopex1(){
+  g1.gain.exponentialRampToValueAtTime(
+    0.00001, context.currentTime + pedal
+  )  
+}
+
+function playex2(){
+  context = new AudioContext()  
+  o2 = context.createOscillator()
+  g2 = context.createGain()
+  o2.type = "triangle"
+  o2.connect(g2)
+  g2.gain.setValueAtTime(0.05, context.currentTime)
+  o2.frequency.value = f2
+  g2.connect(context.destination)
+  o2.start(0)
+  
+}
+
+function stopex2(){
+  g2.gain.exponentialRampToValueAtTime(
+    0.00001, context.currentTime + pedal
+  )  
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var noteValues = {
   'C0': 16.35,
   'C#0': 17.32,
