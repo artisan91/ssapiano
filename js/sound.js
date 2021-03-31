@@ -1,10 +1,9 @@
-let playing = {}; // 현재 연주중인 키 저장
-
-let oscillatorNodes = {}; // key: keyCode, value: oscillator instance
-let gainNodes = {}; // key: keyCode, value: gain instance
-let pedal = 1; // pedal 밟는 효과. 지속시간
+const playing = {}; // 현재 연주중인 키 저장(중복 입력 방지)
+const pedal = 1; // pedal 밟는 효과. 지속시간
+const oscillatorNodes = {}; // oscillatorNode 임시 저장 객체
+const gainNodes = {}; // gainNodes 임시 저장 객체
 let volume = 0.3; // volume
-let oscillatorType = 'square'; // square, triangle, sawtooth
+let oscillatorType = 'triangle'; // square, triangle, sawtooth
 
 // Pedal 조절
 const PedalSlider = document.querySelector('#pedal-bar');
@@ -32,12 +31,14 @@ OscillatorTypeElement.addEventListener('input', function () {
   oscillatorType = this.value;
 });
 
-// Key 인식
-const audioCtx = new AudioContext();
+let audioCtx;
+
+// 페이지 로드 시 AudioContext 객체 생성
+window.addEventListener('load', (event) => {
+  audioCtx = new AudioContext();
+});
 
 window.addEventListener('keydown', (event) => {
-  console.log('keydown > keyCode : ' + event.keyCode);
-
   // 속성이 data-key, 값이 event.keyCode인 요소
   let key = document.querySelector(`[data-key='${event.keyCode}']`);
 
@@ -48,37 +49,50 @@ window.addEventListener('keydown', (event) => {
 
   playing[event.keyCode] = true;
 
-  // Oscillator. 전기 진동을 일으키는 장치 생성
+  // oscillatorNode. 전기 진동을 일으키는 노드 생성 및 oscillatorNodes 객체에 업데이트
   o = audioCtx.createOscillator();
-  oscillatorNodes[event.keyCode] = o;
-  g = audioCtx.createGain();
-  gainNodes[event.keyCode] = g;
+  oscillatorNodes[key.dataset.code] = o;
 
-  // key의 data
+  // gainNode. 볼륨을 조절하는 노드 생성 및 gainNodes 객체에 업데이트
+  g = audioCtx.createGain();
+  gainNodes[key.dataset.code] = g;
+
+  // key의 data-code 속성 값을 주파수에 할당(어떤 음을 낼 지 결정)
   o.frequency.value = noteValues[key.dataset.code];
+  // 미리 정한 설정 적용(같은 주파수더라도 어떤 종류의 소리를 낼 지)
   o.type = oscillatorType;
+  // oscillatorNode와 gainNode 연결
   o.connect(g);
 
-  // key의
+  // volume 설정
   g.gain.setValueAtTime(volume, audioCtx.currentTime);
+  // gainNode를 destination(소리가 최종적으로 render될 곳)가 연결
   g.connect(audioCtx.destination);
 
-  // 진동 발생!
+  // 진동 발생! (파라미터는 소리 발생 시작 시점)
   o.start(audioCtx.currentTime);
 });
 
 window.addEventListener('keyup', (event) => {
-  console.log('keyup > keyCode : ' + event.keyCode);
+  // 속성이 data-key, 값이 event.keyCode인 요소
+  let key = document.querySelector(`[data-key='${event.keyCode}']`);
 
-  o = oscillatorNodes[event.keyCode];
-  g = gainNodes[event.keyCode];
-  // 서서히 소리가 끊기는 효과
+  // 해당 키가 존재하지않으면(입력된 keyCode에 해당하는 미리 만들어 둔 html요소가 없으면) return
+  if (!key) {
+    return;
+  }
+  // 이미 만들어진, keyCode에 해당하는 oscillatorNode와 gainNode 할당
+  o = oscillatorNodes[key.dataset.code];
+  g = gainNodes[key.dataset.code];
+  // 서서히 소리가 작아지는 효과
   g.gain.exponentialRampToValueAtTime(0.000001, audioCtx.currentTime + pedal);
   // 아래 코드는 뚝 끊긴다.
   // o.stop(audioCtx.currentTime + pedal);
+  // 키를 뗀 후에는 다시 'keydown' 이벤트를 받을 수 있도록 상태 변경
   playing[event.keyCode] = false;
 });
 
+// 각 음에 해당하는 실제 주파수
 const noteValues = {
   C0: 16.35,
   'C#0': 17.32,
