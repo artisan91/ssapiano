@@ -1,40 +1,85 @@
-let playing = {};
-let oscillatorNodes = {};
-let gainNodes = {};
-let pedal = 2;
+let playing = {}; // 현재 연주중인 키 저장
+
+let oscillatorNodes = {}; // key: keyCode, value: oscillator instance
+let gainNodes = {}; // key: keyCode, value: gain instance
+let pedal = 1; // pedal 밟는 효과. 지속시간
+let volume = 0.3; // volume
+let oscillatorType = 'square'; // square, triangle, sawtooth
+
+// Pedal 조절
+const PedalSlider = document.querySelector('#pedal-bar');
+PedalSlider.addEventListener(
+  'input',
+  function () {
+    pedal = parseInt(this.value);
+  },
+  false
+);
+
+// Volume 조절
+const VolumeSlider = document.querySelector('#volume-bar');
+VolumeSlider.addEventListener(
+  'input',
+  function () {
+    volume = parseInt(this.value) / 10;
+  },
+  false
+);
+
+// Oscillator Type
+const OscillatorTypeElement = document.querySelector('#oscillator-select');
+OscillatorTypeElement.addEventListener('input', function () {
+  oscillatorType = this.value;
+});
+
+// Key 인식
 const audioCtx = new AudioContext();
 
 window.addEventListener('keydown', (event) => {
+  console.log('keydown > keyCode : ' + event.keyCode);
+
+  // 속성이 data-key, 값이 event.keyCode인 요소
   let key = document.querySelector(`[data-key='${event.keyCode}']`);
+
+  // 해당 키가 존재하지않거나, 이미 연주중인 키라면 return
   if (!key || playing[event.keyCode]) {
     return;
   }
+
   playing[event.keyCode] = true;
 
+  // Oscillator. 전기 진동을 일으키는 장치 생성
   o = audioCtx.createOscillator();
   oscillatorNodes[event.keyCode] = o;
   g = audioCtx.createGain();
   gainNodes[event.keyCode] = g;
 
+  // key의 data
   o.frequency.value = noteValues[key.dataset.code];
-  o.type = 'triangle';
+  o.type = oscillatorType;
   o.connect(g);
 
-  g.gain.setValueAtTime(0.3, audioCtx.currentTime);
+  // key의
+  g.gain.setValueAtTime(volume, audioCtx.currentTime);
   g.connect(audioCtx.destination);
 
+  // 진동 발생!
   o.start(audioCtx.currentTime);
 });
 
 window.addEventListener('keyup', (event) => {
+  console.log('keyup > keyCode : ' + event.keyCode);
+
   o = oscillatorNodes[event.keyCode];
   g = gainNodes[event.keyCode];
+  // 서서히 소리가 끊기는 효과
   g.gain.exponentialRampToValueAtTime(0.000001, audioCtx.currentTime + pedal);
-  o.stop(audioCtx.currentTime + pedal);
+  // 아래 코드는 뚝 끊긴다.
+  // o.stop(audioCtx.currentTime + pedal);
   playing[event.keyCode] = false;
 });
 
-let noteValues = {
+const noteValues = {
   C0: 16.35,
   'C#0': 17.32,
   Db0: 17.32,
