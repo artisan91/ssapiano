@@ -47,7 +47,11 @@ window.addEventListener('keydown', (event) => {
     return;
   }
 
+  //  연주 중으로 상태 표시 (키 중복 입력 방지)
   playing[event.keyCode] = true;
+
+  // 해당 키 노드에 'active_key' class 추가하여 활성 상태 시각화
+  key.classList.add('active_key');
 
   // oscillatorNode. 전기 진동을 일으키는 노드 생성 및 oscillatorNodes 객체에 업데이트
   o = audioCtx.createOscillator();
@@ -81,6 +85,10 @@ window.addEventListener('keyup', (event) => {
   if (!key) {
     return;
   }
+
+  // 해당 키 노드에서 'active_key' class 제거하여 시각화 효과 제거
+  key.classList.remove('active_key');
+
   // 이미 만들어진, keyCode에 해당하는 oscillatorNode와 gainNode 할당
   o = oscillatorNodes[key.dataset.code];
   g = gainNodes[key.dataset.code];
