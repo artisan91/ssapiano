@@ -40,7 +40,9 @@ window.addEventListener('load', (event) => {
 
 window.addEventListener('keydown', (event) => {
   // 속성이 data-key, 값이 event.keyCode인 요소
-  let key = document.querySelector(`[data-key='${event.keyCode}']`);
+  let key = document.querySelector(`.white[data-key='${event.keyCode}']`);
+  // 아래 효과 줄 요소
+  let effect = document.querySelector(`.light[data-key='${event.keyCode}']`);
 
   // 해당 키가 존재하지않거나, 이미 연주중인 키라면 return
   if (!key || playing[event.keyCode]) {
@@ -52,6 +54,13 @@ window.addEventListener('keydown', (event) => {
 
   // 해당 키 노드에 'active_key' class 추가하여 활성 상태 시각화
   key.classList.add('active_key');
+
+  if (effect) {
+    // 아래 효과주기 위해 클래스 추가
+    effect.classList.remove('animate__fadeOut');
+    effect.classList.add('animate__fadeIn');
+    effect.classList.add('active_key');
+  }
 
   // oscillatorNode. 전기 진동을 일으키는 노드 생성 및 oscillatorNodes 객체에 업데이트
   o = audioCtx.createOscillator();
@@ -89,6 +98,14 @@ window.addEventListener('keyup', (event) => {
   // 해당 키 노드에서 'active_key' class 제거하여 시각화 효과 제거
   key.classList.remove('active_key');
 
+  // 아래 효과 뺄 요소
+  let effect = document.querySelector(`.light[data-key='${event.keyCode}']`);
+
+  if (effect) {
+    // 아래 효과 빼기 위해 클래스 제거 및 추가
+    effect.classList.remove('animate__fadeIn');
+    effect.classList.add('animate__fadeOut');
+  }
   // 이미 만들어진, keyCode에 해당하는 oscillatorNode와 gainNode 할당
   o = oscillatorNodes[key.dataset.code];
   g = gainNodes[key.dataset.code];
