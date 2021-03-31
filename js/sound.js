@@ -1,26 +1,37 @@
 let playing = {};
+let oscillatorNodes = {};
+let gainNodes = {};
+let pedal = 2;
+const audioCtx = new AudioContext();
+
 window.addEventListener('keydown', (event) => {
   let key = document.querySelector(`[data-key='${event.keyCode}']`);
   if (!key || playing[event.keyCode]) {
     return;
   }
   playing[event.keyCode] = true;
-  let audioCtx = new AudioContext();
-  let oscillatorNode = audioCtx.createOscillator();
-  let gainNode = audioCtx.createGain();
 
-  oscillatorNode.frequency.value = noteValues[key.dataset.code];
-  oscillatorNode.type = 'triangle';
-  oscillatorNode.connect(gainNode);
+  o = audioCtx.createOscillator();
+  oscillatorNodes[event.keyCode] = o;
+  g = audioCtx.createGain();
+  gainNodes[event.keyCode] = g;
 
-  gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-  gainNode.connect(audioCtx.destination);
+  o.frequency.value = noteValues[key.dataset.code];
+  o.type = 'triangle';
+  o.connect(g);
 
-  oscillatorNode.start(audioCtx.currentTime);
-  window.addEventListener('keyup', (event) => {
-    oscillatorNode.stop(audioCtx.currentTime + 0.2);
-    playing[event.keyCode] = false;
-  });
+  g.gain.setValueAtTime(0.3, audioCtx.currentTime);
+  g.connect(audioCtx.destination);
+
+  o.start(audioCtx.currentTime);
+});
+
+window.addEventListener('keyup', (event) => {
+  o = oscillatorNodes[event.keyCode];
+  g = gainNodes[event.keyCode];
+  g.gain.exponentialRampToValueAtTime(0.000001, audioCtx.currentTime + pedal);
+  o.stop(audioCtx.currentTime + pedal);
+  playing[event.keyCode] = false;
 });
 
 let noteValues = {
