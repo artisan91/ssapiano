@@ -41,7 +41,7 @@ a:hover {
 /* Piano Wrapper */ 
 /* 표준 문법만 쓴 상태 */
 /* https://www.colorzilla.com/gradient-editor/ 에서 접두어 버전 추가 가능 */
-#p-wrapper { 
+.p-wrapper { 
   background:#000; 
   /* 그라데이션 각도, 색상, 색상점의 위치 */
   background:-ms-linear-gradient(-60deg,#000,#333,#000,#666,#333 70%); 
@@ -54,7 +54,7 @@ a:hover {
 }
 
 /* piano body */
-ul#piano { 
+ul.piano { 
   display:block; 
   width:100%; 
   height:240px; 
@@ -63,7 +63,7 @@ ul#piano {
 } 
 
 /* white key */
-ul#piano li#white {
+ul.piano li.white {
   display:block;
   position:relative;
   float:left; 
@@ -74,8 +74,34 @@ ul#piano li#white {
   border-radius:0 0 5px 5px; 
 }
 
+/* 조명 자리 */
+ul.effect li.light {
+  display:block;
+  position:relative;
+  float:left; 
+  top:-35px;
+  height:220px;
+  width:40px; 
+  /* background:#fff;
+  border:1px solid rgb(156, 155, 155);
+  border-radius:0 0 5px 5px;  */
+}
+
+/* 조명 활성화 */
+.light.active_key {
+  display:block;
+  position:relative;
+  float:left; 
+  top:-35px;
+  height:220px;
+  width:40px; 
+  background:rgb(197, 149, 199, 0.7);
+  border-radius:0 0 5px 5px; 
+}
+
+
 /* white key when is pushed*/
-ul#piano li#white.active {
+.white.active_key {
   display:block;
   position:relative;
   height:216px;
@@ -83,8 +109,8 @@ ul#piano li#white.active {
   box-shadow:0 3px 2px rgba(0,0,0,0.4);
 }
 
-/* white key */
-ul#piano span#black {
+/* black key */
+ul.piano span.black {
   display:block;
   position:absolute;
 
@@ -101,7 +127,7 @@ ul#piano span#black {
 }
 
 /* black key when is pushed*/
-ul#piano span#black.active {
+.black.active_key {
   display:block;
   position:absolute;
   top:-1px;
