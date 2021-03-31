@@ -2,41 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>소리 테스트</title>
-  <link rel="stylesheet" href="css/sound.css">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <title>Document</title>
+  <link rel="stylesheet" type="text/css" href="sound.css">
 </head>
 <body>
-<h3>Key Board</h3>
-<div class="keys d-flex">
-  <div data-key="90" class="key" data-code="C3"></div>
-  <div data-key="88" class="key" data-code="D3"></div>
-  <div data-key="67" class="key" data-code="E3"></div>
-  <div data-key="86" class="key" data-code="F3"></div>
-  <div data-key="66" class="key" data-code="G3"></div>
-  <div data-key="78" class="key" data-code="A3"></div>
-  <div data-key="77" class="key" data-code="B3"></div>
-  <div data-key="188" class="key" data-code="C4"></div>
-</div>
 
-<h5>Volume Bar</h5>
-<input id="volume-bar" type="range" min="0" max="10" value="3">
+    <div id="p-wrapper">
+      <ul id="piano">
+        <li id="white" class="active"><span id="black"></span></li>
+        <li id="white"><span id="black"></span></li>
+        <li id="white"></li>
+        <li id="white"><span id="black"></span></li>
+        <li id="white"><span id="black"></span></li>
+        <li id="white"><span id="black" class="active"></span></li>
+        <li id="white"></li>
+      </ul>
+    </div>
 
-<h5>Pedal Bar</h5>
-<input id="pedal-bar" type="range" min="0" max="10" value="2">
+  <div data-key="90" data-code="C3"></div>
+  <div data-key="88" data-code="D3"></div>
+  <div data-key="67" data-code="E3"></div>
+  <div data-key="86" data-code="F3"></div>
+  <div data-key="66" data-code="G3"></div>
+  <div data-key="78" data-code="A3"></div>
+  <div data-key="77" data-code="B3"></div>
+  <div data-key="188" data-code="C4"></div>
 
-<h5>Check Sound Type</h5>
-<select id="oscillator-select">
-    <option value="square">square</option>
-    <option value="triangle">triangle</option>
-    <option value="sawtooth">sawtooth</option>
-</select>
-
-
-<script type="text/javascript" src="js/sound.js"></script>
-<!--
-  <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
--->
+  <script src="js/sound.js"></script>
 </body>
 </html>
