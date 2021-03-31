@@ -72,7 +72,7 @@ header {
   font-weight: bold;
 }
 
-.playing {
+.active_key {
   border-color: aqua;
   transform: scale(0.95);
   box-shadow: 0 0 1rem aqua;
