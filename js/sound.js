@@ -40,7 +40,7 @@ window.addEventListener('load', (event) => {
 
 window.addEventListener('keydown', (event) => {
   // 속성이 data-key, 값이 event.keyCode인 요소
-  let key = document.querySelector(`.white[data-key='${event.keyCode}']`);
+  let key = document.querySelector(`.key[data-key='${event.keyCode}']`);
   // 아래 효과 줄 요소
   let effect = document.querySelector(`.light[data-key='${event.keyCode}']`);
 
