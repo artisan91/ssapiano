@@ -4,6 +4,14 @@ const oscillatorNodes = {}; // oscillatorNode 임시 저장 객체
 const gainNodes = {}; // gainNodes 임시 저장 객체
 let volume = 0.3; // volume
 let oscillatorType = 'triangle'; // square, triangle, sawtooth
+let octave = 3; // 옥타브 초기값 = 3
+
+function octave_set(key, octave) {
+  if (key.dataset.code) {
+    key.dataset.code =
+      key.dataset.code.slice(0, key.dataset.code.length - 1) + String(octave);
+  }
+}
 
 // Pedal 조절
 const PedalSlider = document.querySelector('#pedal-bar');
@@ -33,24 +41,63 @@ OscillatorTypeElement.addEventListener('input', function () {
 
 let audioCtx;
 
-// 페이지 로드 시 AudioContext 객체 생성
+// 페이지 로드 시 AudioContext 객체 생성 및 초기 옥타브 설정
 window.addEventListener('load', (event) => {
   audioCtx = new AudioContext();
+
+  //  모든 키보드 선택
+  keys = document.querySelectorAll('.key');
+  // 각 키보드의 data-code 값 조정
+  for (key of keys) {
+    octave_set(key, octave);
+  }
+});
+
+// 위, 아래 방향키로 옥타브 조절
+window.addEventListener('keydown', (event) => {
+  // 각 키보드의 data-code 값 조정
+  // 옥타브 범위는 0~7 (이미 경계값일 경우 옥타브 조정 없이 리턴)
+  if (event.key === 'ArrowDown' && octave > 0) {
+    octave--;
+  } else if (event.key === 'ArrowUp' && octave < 7) {
+    octave++;
+  } else {
+    return;
+  }
+  //  모든 키보드 선택
+  keys = document.querySelectorAll('.key');
+  // 모든 키에 대해서 옥타브 조정 반영
+  for (key of keys) {
+    octave_set(key, octave);
+  }
 });
 
 window.addEventListener('keydown', (event) => {
-  // 속성이 data-key, 값이 event.keyCode인 요소
-  let key = document.querySelector(`.key[data-key='${event.keyCode}']`);
-  // 아래 효과 줄 요소
-  let effect = document.querySelector(`.light[data-key='${event.keyCode}']`);
+  // 속성이 data-key, 값이 event.key인 요소
+  // event.code 프로퍼티가 Backslash(\), Quote('), Quote(")인 경우
+  // 예외로 data - key의 값이 event.code인 요소를 선택
+  let key;
+  if (event.code === 'Backslash' || event.code === 'Quote') {
+    key = document.querySelector(`.key[data-key="${event.code}"]`);
+  } else {
+    key = document.querySelector(`.key[data-key="${event.key}"]`);
+  }
 
   // 해당 키가 존재하지않거나, 이미 연주중인 키라면 return
-  if (!key || playing[event.keyCode]) {
+  if (!key || playing[event.key]) {
     return;
   }
 
+  // 아래 효과 줄 요소
+  let effect;
+  if (event.code === 'Backslash' || event.code === 'Quote') {
+    effect = document.querySelector(`.light[data-key="${event.code}"]`);
+  } else {
+    effect = document.querySelector(`.light[data-key="${event.key}"]`);
+  }
+
   //  연주 중으로 상태 표시 (키 중복 입력 방지)
-  playing[event.keyCode] = true;
+  playing[event.key] = true;
 
   // 해당 키 노드에 'active_key' class 추가하여 활성 상태 시각화
   key.classList.add('active_key');
@@ -58,6 +105,7 @@ window.addEventListener('keydown', (event) => {
   if (effect) {
     // 아래 효과주기 위해 클래스 추가
     effect.classList.remove('animate__fadeOut');
+    effect.classList.add('animate__animated');
     effect.classList.add('animate__fadeIn');
     effect.classList.add('active_key');
   }
@@ -87,10 +135,16 @@ window.addEventListener('keydown', (event) => {
 });
 
 window.addEventListener('keyup', (event) => {
-  // 속성이 data-key, 값이 event.keyCode인 요소
-  let key = document.querySelector(`[data-key='${event.keyCode}']`);
-
-  // 해당 키가 존재하지않으면(입력된 keyCode에 해당하는 미리 만들어 둔 html요소가 없으면) return
+  // 속성이 data-key, 값이 event.key인 요소
+  // event.code 프로퍼티가 Backslash(\), Quote('), Quote(")인 경우
+  // 예외로 data - key의 값이 event.code인 요소를 선택
+  let key;
+  if (event.code === 'Backslash' || event.code === 'Quote') {
+    key = document.querySelector(`.key[data-key="${event.code}"]`);
+  } else {
+    key = document.querySelector(`.key[data-key="${event.key}"]`);
+  }
+  // 해당 키가 존재하지않으면(입력된 key에 해당하는 미리 만들어 둔 html요소가 없으면) return
   if (!key) {
     return;
   }
@@ -99,14 +153,20 @@ window.addEventListener('keyup', (event) => {
   key.classList.remove('active_key');
 
   // 아래 효과 뺄 요소
-  let effect = document.querySelector(`.light[data-key='${event.keyCode}']`);
+  let effect;
+  if (event.code === 'Backslash' || event.code === 'Quote') {
+    effect = document.querySelector(`.light[data-key="${event.code}"]`);
+  } else {
+    effect = document.querySelector(`.light[data-key="${event.key}"]`);
+  }
 
   if (effect) {
     // 아래 효과 빼기 위해 클래스 제거 및 추가
     effect.classList.remove('animate__fadeIn');
     effect.classList.add('animate__fadeOut');
+    // effect.classList.remove('active_key');
   }
-  // 이미 만들어진, keyCode에 해당하는 oscillatorNode와 gainNode 할당
+  // 이미 만들어진, key에 해당하는 oscillatorNode와 gainNode 할당
   o = oscillatorNodes[key.dataset.code];
   g = gainNodes[key.dataset.code];
   // 서서히 소리가 작아지는 효과
@@ -114,7 +174,7 @@ window.addEventListener('keyup', (event) => {
   // 아래 코드는 뚝 끊긴다.
   // o.stop(audioCtx.currentTime + pedal);
   // 키를 뗀 후에는 다시 'keydown' 이벤트를 받을 수 있도록 상태 변경
-  playing[event.keyCode] = false;
+  playing[event.key] = false;
 });
 
 // 각 음에 해당하는 실제 주파수
