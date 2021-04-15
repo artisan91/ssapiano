@@ -4,6 +4,14 @@ const oscillatorNodes = {}; // oscillatorNode 임시 저장 객체
 const gainNodes = {}; // gainNodes 임시 저장 객체
 let volume = 0.3; // volume
 let oscillatorType = 'triangle'; // square, triangle, sawtooth
+let octave = 3; // 옥타브 초기값 = 3
+
+function octave_set(key, octave) {
+  if (key.dataset.code) {
+    key.dataset.code =
+      key.dataset.code.slice(0, key.dataset.code.length - 1) + String(octave);
+  }
+}
 
 // Pedal 조절
 const PedalSlider = document.querySelector('#pedal-bar');
@@ -33,9 +41,35 @@ OscillatorTypeElement.addEventListener('input', function () {
 
 let audioCtx;
 
-// 페이지 로드 시 AudioContext 객체 생성
+// 페이지 로드 시 AudioContext 객체 생성 및 초기 옥타브 설정
 window.addEventListener('load', (event) => {
   audioCtx = new AudioContext();
+
+  //  모든 키보드 선택
+  keys = document.querySelectorAll('.key');
+  // 각 키보드의 data-code 값 조정
+  for (key of keys) {
+    octave_set(key, octave);
+  }
+});
+
+// 위, 아래 방향키로 옥타브 조절
+window.addEventListener('keydown', (event) => {
+  // 각 키보드의 data-code 값 조정
+  // 옥타브 범위는 0~7 (이미 경계값일 경우 옥타브 조정 없이 리턴)
+  if (event.key === 'ArrowDown' && octave > 0) {
+    octave--;
+  } else if (event.key === 'ArrowUp' && octave < 7) {
+    octave++;
+  } else {
+    return;
+  }
+  //  모든 키보드 선택
+  keys = document.querySelectorAll('.key');
+  // 모든 키에 대해서 옥타브 조정 반영
+  for (key of keys) {
+    octave_set(key, octave);
+  }
 });
 
 window.addEventListener('keydown', (event) => {
