@@ -5,6 +5,7 @@ const gainNodes = {}; // gainNodes 임시 저장 객체
 let volume = 0.3; // volume
 let oscillatorType = 'triangle'; // square, triangle, sawtooth
 let octave = 3; // 옥타브 초기값 = 3
+let keys = document.querySelectorAll('.key'); // 모든 건반 요소
 
 function octave_set(key, octave) {
   if (key.dataset.code) {
@@ -72,6 +73,138 @@ window.addEventListener('keydown', (event) => {
   }
 });
 
+// 마우스로 키를 누르는 동안 키에 해당하는 소리가 남
+keys.forEach((keyElement) => {
+  keyElement.addEventListener('mousedown', (event) => {
+    // 마우스가 클릭한 key에 해당하는 li 요소 선택
+    // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
+    let key = event.currentTarget;
+
+    // 해당 키가 이미 연주중인 키라면 return
+    if (playing[event.key]) {
+      return;
+    }
+
+    //  연주 중으로 상태 표시 (키 중복 입력 방지)
+    playing[event.key] = true;
+
+    // 아래 효과 줄 요소 (light 클래스를 가진 요소 중 현재 선택된 key와 data-key 값이 같은 요소 선택)
+    let effect = document.querySelector(
+      `.light[data-key="${key.dataset.key}"]`
+    );
+
+    // 해당 키 노드에 'active_key' class 추가하여 활성 상태 시각화
+    key.classList.add('active_key');
+
+    if (effect) {
+      // 키 아래 효과주기 위해 클래스 추가
+      effect.classList.remove('animate__fadeOut');
+      effect.classList.add('animate__animated');
+      effect.classList.add('animate__fadeIn');
+      effect.classList.add('active_key');
+    }
+
+    // oscillatorNode. 전기 진동을 일으키는 노드 생성 및 oscillatorNodes 객체에 업데이트
+    o = audioCtx.createOscillator();
+    oscillatorNodes[key.dataset.code] = o;
+
+    // gainNode. 볼륨을 조절하는 노드 생성 및 gainNodes 객체에 업데이트
+    g = audioCtx.createGain();
+    gainNodes[key.dataset.code] = g;
+
+    // key의 data-code 속성 값을 주파수에 할당(어떤 음을 낼 지 결정)
+    o.frequency.value = noteValues[key.dataset.code];
+    // 미리 정한 설정 적용(같은 주파수더라도 어떤 종류의 소리를 낼 지)
+    o.type = oscillatorType;
+    // oscillatorNode와 gainNode 연결
+    o.connect(g);
+
+    // volume 설정
+    g.gain.setValueAtTime(volume, audioCtx.currentTime);
+    // gainNode를 destination(소리가 최종적으로 render될 곳)가 연결
+    g.connect(audioCtx.destination);
+
+    // 진동 발생! (파라미터는 소리 발생 시작 시점)
+    o.start(audioCtx.currentTime);
+  });
+});
+
+// 키에서 마우스를 떼면 소리가 점점 감소하다가 멈춤
+keys.forEach((keyElement) => {
+  keyElement.addEventListener('mouseup', (event) => {
+    // 마우스를 뗀 key에 해당하는 li 요소 선택
+    // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
+    let key = event.currentTarget;
+
+    // 연주 중이 아닌 경우 바로 리턴
+    if (!playing[event.key]) {
+      return;
+    }
+    // 해당 키 노드에서 'active_key' class 제거하여 시각화 효과 제거
+    key.classList.remove('active_key');
+
+    // 아래 효과 뺄 요소 (light 클래스를 가진 요소 중 현재 선택된 key와 data-key 값이 같은 요소 선택)
+    let effect = document.querySelector(
+      `.light[data-key="${key.dataset.key}"]`
+    );
+
+    if (effect) {
+      // 아래 효과 빼기 위해 클래스 제거 및 추가
+      effect.classList.remove('animate__fadeIn');
+      effect.classList.add('animate__fadeOut');
+      // effect.classList.remove('active_key');
+    }
+    // 이미 만들어진, key에 해당하는 oscillatorNode와 gainNode 할당
+    o = oscillatorNodes[key.dataset.code];
+    g = gainNodes[key.dataset.code];
+    // 서서히 소리가 작아지는 효과
+    g.gain.exponentialRampToValueAtTime(0.000001, audioCtx.currentTime + pedal);
+    // 아래 코드는 뚝 끊긴다.
+    // o.stop(audioCtx.currentTime + pedal);
+    // 키를 뗀 후에는 다시 'keydown' 이벤트를 받을 수 있도록 상태 변경
+    playing[event.key] = false;
+  });
+});
+
+// 키 밖으로 마우스를 이동하면 소리가 점점 감소하다가 멈춤
+keys.forEach((keyElement) => {
+  keyElement.addEventListener('mouseleave', (event) => {
+    // 마우스를 뗀 key에 해당하는 li 요소 선택
+    // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
+    let key = event.currentTarget;
+
+    // 연주 중이 아닌 경우 바로 리턴
+    if (!playing[event.key]) {
+      return;
+    }
+
+    // 해당 키 노드에서 'active_key' class 제거하여 시각화 효과 제거
+    key.classList.remove('active_key');
+
+    // 아래 효과 뺄 요소 (light 클래스를 가진 요소 중 현재 선택된 key와 data-key 값이 같은 요소 선택)
+    let effect = document.querySelector(
+      `.light[data-key="${key.dataset.key}"]`
+    );
+
+    if (effect) {
+      // 아래 효과 빼기 위해 클래스 제거 및 추가
+      effect.classList.remove('animate__fadeIn');
+      effect.classList.add('animate__fadeOut');
+      // effect.classList.remove('active_key');
+    }
+    // 이미 만들어진, key에 해당하는 oscillatorNode와 gainNode 할당
+    o = oscillatorNodes[key.dataset.code];
+    g = gainNodes[key.dataset.code];
+    // 서서히 소리가 작아지는 효과
+    g.gain.exponentialRampToValueAtTime(0.000001, audioCtx.currentTime + pedal);
+    // 아래 코드는 뚝 끊긴다.
+    // o.stop(audioCtx.currentTime + pedal);
+    // 키를 뗀 후에는 다시 'keydown' 이벤트를 받을 수 있도록 상태 변경
+    playing[event.key] = false;
+  });
+});
+
+// 키보드로 키를 누르면 키에 해당하는 소리가 남
 window.addEventListener('keydown', (event) => {
   // 속성이 data-key, 값이 event.key인 요소
   // event.code 프로퍼티가 Backslash(\), Quote('), Quote(")인 경우
@@ -88,6 +221,9 @@ window.addEventListener('keydown', (event) => {
     return;
   }
 
+  //  연주 중으로 상태 표시 (키 중복 입력 방지)
+  playing[event.key] = true;
+
   // 아래 효과 줄 요소
   let effect;
   if (event.code === 'Backslash' || event.code === 'Quote') {
@@ -96,14 +232,11 @@ window.addEventListener('keydown', (event) => {
     effect = document.querySelector(`.light[data-key="${event.key}"]`);
   }
 
-  //  연주 중으로 상태 표시 (키 중복 입력 방지)
-  playing[event.key] = true;
-
   // 해당 키 노드에 'active_key' class 추가하여 활성 상태 시각화
   key.classList.add('active_key');
 
   if (effect) {
-    // 아래 효과주기 위해 클래스 추가
+    // 키 아래 효과주기 위해 클래스 추가
     effect.classList.remove('animate__fadeOut');
     effect.classList.add('animate__animated');
     effect.classList.add('animate__fadeIn');
@@ -134,6 +267,7 @@ window.addEventListener('keydown', (event) => {
   o.start(audioCtx.currentTime);
 });
 
+// 키보드 키를 떼면 잠시 후 소리가 점점 감소하다가 멈춤
 window.addEventListener('keyup', (event) => {
   // 속성이 data-key, 값이 event.key인 요소
   // event.code 프로퍼티가 Backslash(\), Quote('), Quote(")인 경우
