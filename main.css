@@ -39,32 +39,38 @@ header {
   box-sizing: border-box;
   z-index: 2;
 }
+
 .key:not(.sharp) {
-  float: none;
+  position: relative;
+  left: 1.4rem;
+  display: inline-block;
   margin-right: -3px;
-  width: 6%;
+  width: 7%;
   height: 95%;
-  background: ivory;    
+  background: ivory;
+  z-index: 1;    
 }
+
 .key.sharp {
   position: absolute;
-  width: 4%;
-  height: 65%;
+  width: 2.5rem;
+  height: 11rem;
   background: #000;
   color: #eee;
   top: 0;
-  z-index: 3;
+  z-index: 2;
 }
+
 .keyboard {
   display: block;
   position: absolute;
   bottom: 8px;
   width: 100%;
-  font-size: 1rem;
+  font-size: 0.7rem;
   font-weight: bold;
 }
 
-.active_key {
+.key.active_key {
   border-color: aqua;
   transform: scale(0.95);
   box-shadow: 0 0 1rem aqua;
@@ -80,7 +86,7 @@ h5 {
 
 .octave_controller {
   display: inline-block;
-  vertical-align: center;
-  width: 5%;
+  position: relative;
+  width: 10%;
   background: seagreen;
 }
