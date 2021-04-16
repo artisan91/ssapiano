@@ -1,17 +1,38 @@
-const playing = {}; // 현재 연주중인 키 저장(중복 입력 방지)
+const playing_keys = {}; // 현재 연주중인 키 저장(중복 입력 방지)
 const pedal = 1; // pedal 밟는 효과. 지속시간
 const oscillatorNodes = {}; // oscillatorNode 임시 저장 객체
 const gainNodes = {}; // gainNodes 임시 저장 객체
+let playing = 0; // 현재 연주 중인 키가 있는지 확인하기 위한 변수
 let volume = 0.3; // volume
 let oscillatorType = 'triangle'; // square, triangle, sawtooth
-let octave = 3; // 옥타브 초기값 = 3
+let octave_base = 2; // 가장 낮은 옥타브 초기값 = 2
 let keys = document.querySelectorAll('.key'); // 모든 건반 요소
+let octave1_keys = document.querySelectorAll('.octave1');
+let octave2_keys = document.querySelectorAll('.octave2');
+let octave3_keys = document.querySelectorAll('.octave3');
+let octave4_keys = document.querySelectorAll('.octave4');
 
-function octave_set(key, octave) {
-  if (key.dataset.code) {
+// 가장 낮은 옥타브를 octave_base 값에 맞춰 전체 키 변경
+function octave_set(octave_base) {
+  octave1_keys.forEach((key) => {
     key.dataset.code =
-      key.dataset.code.slice(0, key.dataset.code.length - 1) + String(octave);
-  }
+      key.dataset.code.slice(0, key.dataset.code.length - 1) + octave_base;
+  });
+  octave2_keys.forEach((key) => {
+    key.dataset.code =
+      key.dataset.code.slice(0, key.dataset.code.length - 1) +
+      (octave_base + 1);
+  });
+  octave3_keys.forEach((key) => {
+    key.dataset.code =
+      key.dataset.code.slice(0, key.dataset.code.length - 1) +
+      (octave_base + 2);
+  });
+  octave4_keys.forEach((key) => {
+    key.dataset.code =
+      key.dataset.code.slice(0, key.dataset.code.length - 1) +
+      (octave_base + 3);
+  });
 }
 
 // Pedal 조절
@@ -46,31 +67,30 @@ let audioCtx;
 window.addEventListener('load', (event) => {
   audioCtx = new AudioContext();
 
-  //  모든 키보드 선택
-  keys = document.querySelectorAll('.key');
-  // 각 키보드의 data-code 값 조정
-  for (key of keys) {
-    octave_set(key, octave);
-  }
+  // 모든 키 옥타브 초기화
+  octave_set(octave_base);
 });
 
 // 위, 아래 방향키로 옥타브 조절
 window.addEventListener('keydown', (event) => {
+  // 만약 연주중인 키가 있다면 리턴
+  if (playing) {
+    return;
+  }
+
   // 각 키보드의 data-code 값 조정
   // 옥타브 범위는 0~7 (이미 경계값일 경우 옥타브 조정 없이 리턴)
-  if (event.key === 'ArrowDown' && octave > 0) {
-    octave--;
-  } else if (event.key === 'ArrowUp' && octave < 7) {
-    octave++;
+  // 가장 낮은 옥타브 값(octave_base)의 범위는 0~(7 - 옥타브 최대 차이)
+  if (event.key === 'ArrowLeft' && octave_base > 0) {
+    octave_base--;
+  } else if (event.key === 'ArrowRight' && octave_base < 7 - 3) {
+    octave_base++;
   } else {
     return;
   }
-  //  모든 키보드 선택
-  keys = document.querySelectorAll('.key');
-  // 모든 키에 대해서 옥타브 조정 반영
-  for (key of keys) {
-    octave_set(key, octave);
-  }
+
+  // 모든 키 옥타브 조정
+  octave_set(octave_base);
 });
 
 // 마우스로 키를 누르는 동안 키에 해당하는 소리가 남
@@ -81,12 +101,13 @@ keys.forEach((keyElement) => {
     let key = event.currentTarget;
 
     // 해당 키가 이미 연주중인 키라면 return
-    if (playing[event.key]) {
+    if (playing_keys[event.key]) {
       return;
     }
 
-    //  연주 중으로 상태 표시 (키 중복 입력 방지)
-    playing[event.key] = true;
+    //  연주 중으로 상태 표시 (+키 중복 입력 방지)
+    playing = 1;
+    playing_keys[event.key] = true;
 
     // 아래 효과 줄 요소 (light 클래스를 가진 요소 중 현재 선택된 key와 data-key 값이 같은 요소 선택)
     let effect = document.querySelector(
@@ -137,7 +158,7 @@ keys.forEach((keyElement) => {
     let key = event.currentTarget;
 
     // 연주 중이 아닌 경우 바로 리턴
-    if (!playing[event.key]) {
+    if (!playing_keys[event.key]) {
       return;
     }
     // 해당 키 노드에서 'active_key' class 제거하여 시각화 효과 제거
@@ -162,7 +183,8 @@ keys.forEach((keyElement) => {
     // 아래 코드는 뚝 끊긴다.
     // o.stop(audioCtx.currentTime + pedal);
     // 키를 뗀 후에는 다시 'keydown' 이벤트를 받을 수 있도록 상태 변경
-    playing[event.key] = false;
+    playing_keys[event.key] = false;
+    playing = 0;
   });
 });
 
@@ -174,7 +196,7 @@ keys.forEach((keyElement) => {
     let key = event.currentTarget;
 
     // 연주 중이 아닌 경우 바로 리턴
-    if (!playing[event.key]) {
+    if (!playing_keys[event.key]) {
       return;
     }
 
@@ -200,7 +222,8 @@ keys.forEach((keyElement) => {
     // 아래 코드는 뚝 끊긴다.
     // o.stop(audioCtx.currentTime + pedal);
     // 키를 뗀 후에는 다시 'keydown' 이벤트를 받을 수 있도록 상태 변경
-    playing[event.key] = false;
+    playing_keys[event.key] = false;
+    playing = 0;
   });
 });
 
@@ -217,12 +240,13 @@ window.addEventListener('keydown', (event) => {
   }
 
   // 해당 키가 존재하지않거나, 이미 연주중인 키라면 return
-  if (!key || playing[event.key]) {
+  if (!key || playing_keys[event.key]) {
     return;
   }
 
-  //  연주 중으로 상태 표시 (키 중복 입력 방지)
-  playing[event.key] = true;
+  //  연주 중으로 상태 표시 (+키 중복 입력 방지)
+  playing = 1;
+  playing_keys[event.key] = true;
 
   // 아래 효과 줄 요소
   let effect;
@@ -308,7 +332,8 @@ window.addEventListener('keyup', (event) => {
   // 아래 코드는 뚝 끊긴다.
   // o.stop(audioCtx.currentTime + pedal);
   // 키를 뗀 후에는 다시 'keydown' 이벤트를 받을 수 있도록 상태 변경
-  playing[event.key] = false;
+  playing_keys[event.key] = false;
+  playing = 0;
 });
 
 // 각 음에 해당하는 실제 주파수
