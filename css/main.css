@@ -27,7 +27,7 @@ header {
   max-width: 1000px;
   position: relative;
   margin: 50px auto;
-  background-image: url('images/wood.jpg');
+  background-image: url('../images/wood.jpg');
 }
 
 .key {
