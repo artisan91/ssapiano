@@ -18,7 +18,7 @@ window.onload = () => {
     if (desktopStream && desktopStream.getAudioTracks().length > 0) {
       const source1 = context.createMediaStreamSource(desktopStream);
       const desktopGain = context.createGain();
-      desktopGain.gain.value = 0.7;
+      desktopGain.gain.value = 10;
       source1.connect(desktopGain).connect(destination);
       hasDesktop = true;
     }
@@ -26,7 +26,7 @@ window.onload = () => {
     if (voiceStream && voiceStream.getAudioTracks().length > 0) {
       const source2 = context.createMediaStreamSource(voiceStream);
       const voiceGain = context.createGain();
-      voiceGain.gain.value = 0.7;
+      voiceGain.gain.value = 1;
       source2.connect(voiceGain).connect(destination);
       hasVoice = true;
     }
@@ -36,7 +36,10 @@ window.onload = () => {
  
   startBtn.onclick = async () => { // 녹화 시작 버튼을 누른 경우
     
-    desktopStream = await navigator.mediaDevices.getDisplayMedia({ video: { width: 640 , height: 480 }, audio: true }); // 비디오스트림 생성
+    desktopStream = await navigator.mediaDevices.getDisplayMedia({
+      video: { width: 640 , height: 480 }, 
+      audio: true 
+    }); // 비디오스트림 생성
     voiceStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true }); // 오디오스트림 생성
   
     const tracks = [
