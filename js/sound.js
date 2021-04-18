@@ -1,9 +1,9 @@
 const playing_keys = {}; // 현재 연주중인 키 저장(중복 입력 방지)
-const pedal = 1; // pedal 밟는 효과. 지속시간
 const oscillatorNodes = {}; // oscillatorNode 임시 저장 객체
 const gainNodes = {}; // gainNodes 임시 저장 객체
 let playing = 0; // 현재 연주 중인 키가 있는지 확인하기 위한 변수
 let volume = 0.3; // volume
+let pedal = 1; // pedal 밟는 효과. 지속시간
 let oscillatorType = 'triangle'; // square, triangle, sawtooth
 let octave_base = 2; // 가장 낮은 옥타브 초기값 = 2
 let keys = document.querySelectorAll('.key'); // 모든 건반 요소
