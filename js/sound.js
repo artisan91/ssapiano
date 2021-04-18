@@ -67,6 +67,7 @@ OctaveSlider.addEventListener(
   'input',
   function () {
     octave_base = parseInt(this.value);
+    octave_set(octave_base);
   },
   false
 );

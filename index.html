@@ -144,7 +144,15 @@
   </section>
   <div class="options">
     <div class="sound_controller">
-      <div class="volume">
+      <div class="sound_type">
+        <h5>Check Sound Type</h5>
+        <select id="oscillator-select">
+          <option value="triangle">triangle</option>
+          <option value="square">square</option>
+            <option value="sawtooth">sawtooth</option>
+        </select>
+      </div>
+        <div class="volume">
         <h5>Volume Bar</h5>
         <input id="volume-bar" type="range" min="0" max="10" value="3">
       </div>
@@ -154,14 +162,6 @@
         <input id="pedal-bar" type="range" min="0" max="10" value="2">
       </div>
       
-      <div class="sound_type">
-        <h5>Check Sound Type</h5>
-        <select id="oscillator-select">
-            <option value="square">square</option>
-            <option value="triangle">triangle</option>
-            <option value="sawtooth">sawtooth</option>
-        </select>
-      </div>
       <div class="octave_controller">
         <h5>Octave Bar</h5>
         <input id="octave-bar" type="range" min="0" max="4" value="2">
