@@ -61,6 +61,17 @@ OscillatorTypeElement.addEventListener('input', function () {
   oscillatorType = this.value;
 });
 
+// Octave 조절
+const OctaveSlider = document.querySelector('#octave-bar');
+OctaveSlider.addEventListener(
+  'input',
+  function () {
+    octave_base = parseInt(this.value);
+  },
+  false
+);
+
+
 let audioCtx;
 
 // 페이지 로드 시 AudioContext 객체 생성 및 초기 옥타브 설정
@@ -71,7 +82,7 @@ window.addEventListener('load', (event) => {
   octave_set(octave_base);
 });
 
-// 위, 아래 방향키로 옥타브 조절
+// 좌,우 방향키로 옥타브 조절
 window.addEventListener('keydown', (event) => {
   // 만약 연주중인 키가 있다면 리턴
   if (playing) {
@@ -83,8 +94,10 @@ window.addEventListener('keydown', (event) => {
   // 가장 낮은 옥타브 값(octave_base)의 범위는 0~(7 - 옥타브 최대 차이)
   if (event.key === 'ArrowLeft' && octave_base > 0) {
     octave_base--;
+    OctaveSlider.value = octave_base;
   } else if (event.key === 'ArrowRight' && octave_base < 7 - 3) {
     octave_base++;
+    OctaveSlider.value = octave_base;
   } else {
     return;
   }
@@ -106,7 +119,7 @@ keys.forEach((keyElement) => {
     }
 
     //  연주 중으로 상태 표시 (+키 중복 입력 방지)
-    playing = 1;
+    playing += 1;
     playing_keys[event.key] = true;
 
     // 아래 효과 줄 요소 (light 클래스를 가진 요소 중 현재 선택된 key와 data-key 값이 같은 요소 선택)
@@ -184,7 +197,7 @@ keys.forEach((keyElement) => {
     // o.stop(audioCtx.currentTime + pedal);
     // 키를 뗀 후에는 다시 'keydown' 이벤트를 받을 수 있도록 상태 변경
     playing_keys[event.key] = false;
-    playing = 0;
+    playing -= 1;
   });
 });
 
@@ -223,7 +236,7 @@ keys.forEach((keyElement) => {
     // o.stop(audioCtx.currentTime + pedal);
     // 키를 뗀 후에는 다시 'keydown' 이벤트를 받을 수 있도록 상태 변경
     playing_keys[event.key] = false;
-    playing = 0;
+    playing -= 1;
   });
 });
 
@@ -245,7 +258,7 @@ window.addEventListener('keydown', (event) => {
   }
 
   //  연주 중으로 상태 표시 (+키 중복 입력 방지)
-  playing = 1;
+  playing += 1;
   playing_keys[event.key] = true;
 
   // 아래 효과 줄 요소
@@ -333,7 +346,7 @@ window.addEventListener('keyup', (event) => {
   // o.stop(audioCtx.currentTime + pedal);
   // 키를 뗀 후에는 다시 'keydown' 이벤트를 받을 수 있도록 상태 변경
   playing_keys[event.key] = false;
-  playing = 0;
+  playing -= 1;
 });
 
 // 각 음에 해당하는 실제 주파수
