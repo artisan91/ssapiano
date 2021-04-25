@@ -35,7 +35,7 @@ header {
   display: inline-block;
 
   box-sizing: border-box;
-  /* border: 2px solid black; */
+  /* border: 1px solid black; */
   border-radius: .5rem;
   transition: all .07s ease;
   z-index: 2;
