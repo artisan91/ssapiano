@@ -39,6 +39,8 @@ oneLineBtn.addEventListener('click',
       notSharpKey.style.width="4%";
       notSharpKey.style.left ="1.3%";
     })
+
+    octave_set(octave_base);
   },
   false
 ) 
@@ -58,6 +60,8 @@ twoLinesBtn.addEventListener('click',
     notSharpKeys.forEach((notSharpKey) => {
       notSharpKey.style.width="7%";
       notSharpKey.style.left ="2%";
+
+      octave_set(octave_base);
     })
   },
   false
