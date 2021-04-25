@@ -80,12 +80,16 @@ PedalSlider.addEventListener(
 window.addEventListener('keydown', (event) => {
   if(event.code === 'Space'){
     pedal += 7;
+    if(pedal>8) pedal=8;
+    PedalSlider.value = pedal;
   }
 });
 
 window.addEventListener('keyup', (event) => {
   if(event.code === 'Space'){
     pedal -= 7;
+    if(pedal<1) pedal=1;
+    PedalSlider.value = pedal;
   }
 });
 
@@ -154,29 +158,6 @@ OctaveSlider.addEventListener(
   false
 );
 
-/*
-// Mouse Clickable
-const MouseClickRadioBtn = document.querySelector('#clickableBtn');
-MouseClickRadioBtn.addEventListener(
-  'input',
-  function(){
-    if(MouseClickRadioBtn.checked){
-      console.log("click available");
-    }
-  },
-  false
-);
-*/
-
-// Sound Generator
-let playing = 0; // 현재 연주 중인 키의 개수
-let audioCtx;
-let keys = document.querySelectorAll('.key'); // 모든 건반 요소
-
-const playing_keys = {}; // 현재 연주중인 키 저장(중복 입력 방지)
-const oscillatorNodes = {}; // oscillatorNode 임시 저장 객체
-const gainNodes = {}; // gainNodes 임시 저장 객체
-
 
 // 페이지 로드 시 AudioContext 객체 생성 및 초기 옥타브 설정
 window.addEventListener('load', (event) => {
@@ -209,6 +190,31 @@ window.addEventListener('keydown', (event) => {
   // 모든 키 옥타브 조정
   octave_set(octave_base);
 });
+
+
+/*
+// Mouse Clickable
+const MouseClickRadioBtn = document.querySelector('#clickableBtn');
+MouseClickRadioBtn.addEventListener(
+  'input',
+  function(){
+    if(MouseClickRadioBtn.checked){
+      console.log("click available");
+    }
+  },
+  false
+);
+*/
+
+// Sound Generator
+let playing = 0; // 현재 연주 중인 키의 개수
+let audioCtx;
+let keys = document.querySelectorAll('.key'); // 모든 건반 요소
+
+const playing_keys = {}; // 현재 연주중인 키 저장(중복 입력 방지)
+const oscillatorNodes = {}; // oscillatorNode 임시 저장 객체
+const gainNodes = {}; // gainNodes 임시 저장 객체
+
 
 // Sound Methods
 function startSound(event, key){
@@ -303,8 +309,6 @@ window.addEventListener('keydown', (event) => {
   // event.code 프로퍼티가 Backslash(\), Quote('), Quote(")인 경우
   // 예외로 data - key의 값이 event.code인 요소를 선택
   let key;
-  console.log("code : "+event.code);
-  console.log("key : "+event.key);
   if (event.code === 'Backslash' || event.code === 'Quote') {
     key = document.querySelector(`.key[data-key="${event.code}"]`);
   } else {
@@ -345,7 +349,6 @@ window.addEventListener('keyup', (event) => {
 // 마우스로 키를 누르는 동안 키에 해당하는 소리가 남
 keys.forEach((keyElement) => {
   keyElement.addEventListener('mousedown', (event) => {
-    console.log("key clicked");
     // 마우스가 클릭한 key에 해당하는 li 요소 선택
     // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
     let key = event.currentTarget;
