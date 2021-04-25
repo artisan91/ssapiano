@@ -82,6 +82,7 @@ PedalSlider.addEventListener(
 // Pedal++
 window.addEventListener('keydown', (event) => {
   if (event.code === 'Space') {
+    event.preventDefault(); // 브라우저 기본 동작(화면 아래로 이동) 방지
     pedal += 7;
     if (pedal > 8) pedal = 8;
     PedalSlider.value = pedal;
@@ -166,6 +167,13 @@ window.addEventListener('load', (event) => {
 
   // 모든 키 옥타브 초기화
   octave_set(octave_base);
+});
+
+// Tab 키 비활성화
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'Tab') {
+    event.preventDefault();
+  }
 });
 
 // 좌,우 방향키로 옥타브 조절
