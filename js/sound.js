@@ -1,14 +1,14 @@
 /**
  * Key Arranger
  * 1. Key Arrangement
- * 
+ *
  * Sound Controller
  * 1. Pedal
  * 2. Volume
  * 3. Oscilliator Type
  * 4. Octave
  * 5. Clickable
- * 
+ *
  * Sound Generator
  * 1. start/stop sound
  * 2. start/stop effect
@@ -17,56 +17,55 @@
  */
 
 // Key Arranger
-const Main = document.getElementById("main");
-const oneLineBtn = document.getElementById("oneLineBtn");
-const twoLinesBtn = document.getElementById("twoLinesBtn");
+const Main = document.getElementById('main');
+const oneLineBtn = document.getElementById('oneLineBtn');
+const twoLinesBtn = document.getElementById('twoLinesBtn');
 let sharpKeys;
 let notSharpKeys;
 
 // 한 줄
-oneLineBtn.addEventListener('click', 
-  function(){
-    console.log("one line");
+oneLineBtn.addEventListener(
+  'click',
+  function () {
     Main.innerHTML = oneLine;
 
     sharpKeys = document.querySelectorAll('.key.sharp'); // 흑건
     sharpKeys.forEach((sharpKey) => {
-      sharpKey.style.width = "2.6%";
-    })
+      sharpKey.style.width = '2.6%';
+    });
 
     notSharpKeys = document.querySelectorAll('.key:not(.sharp)'); // 백건
     notSharpKeys.forEach((notSharpKey) => {
-      notSharpKey.style.width="4%";
-      notSharpKey.style.left ="1.3%";
-    })
+      notSharpKey.style.width = '4%';
+      notSharpKey.style.left = '1.3%';
+    });
 
     octave_set(octave_base);
   },
   false
-) 
+);
 
 // 두 줄
-twoLinesBtn.addEventListener('click', 
-  function(){
-    console.log("two lines");
+twoLinesBtn.addEventListener(
+  'click',
+  function () {
     Main.innerHTML = twoLines;
 
     sharpKeys = document.querySelectorAll('.key.sharp'); // 흑건
     sharpKeys.forEach((sharpKey) => {
-      sharpKey.style.width = "4%";
-    })
+      sharpKey.style.width = '4%';
+    });
 
     notSharpKeys = document.querySelectorAll('.key:not(.sharp)'); // 백건
     notSharpKeys.forEach((notSharpKey) => {
-      notSharpKey.style.width="7%";
-      notSharpKey.style.left ="2%";
+      notSharpKey.style.width = '7%';
+      notSharpKey.style.left = '2%';
 
       octave_set(octave_base);
-    })
+    });
   },
   false
-) 
-
+);
 
 // Sound Controller
 // Pedal 조절
@@ -82,17 +81,17 @@ PedalSlider.addEventListener(
 );
 // Pedal++
 window.addEventListener('keydown', (event) => {
-  if(event.code === 'Space'){
+  if (event.code === 'Space') {
     pedal += 7;
-    if(pedal>8) pedal=8;
+    if (pedal > 8) pedal = 8;
     PedalSlider.value = pedal;
   }
 });
 
 window.addEventListener('keyup', (event) => {
-  if(event.code === 'Space'){
+  if (event.code === 'Space') {
     pedal -= 7;
-    if(pedal<1) pedal=1;
+    if (pedal < 1) pedal = 1;
     PedalSlider.value = pedal;
   }
 });
@@ -115,7 +114,6 @@ const OscillatorTypeElement = document.querySelector('#oscillator-select');
 OscillatorTypeElement.addEventListener('input', function () {
   oscillatorType = this.value;
 });
-
 
 // Octave
 let octave_base = 2; // 가장 낮은 옥타브 초기값 = 2
@@ -162,7 +160,6 @@ OctaveSlider.addEventListener(
   false
 );
 
-
 // 페이지 로드 시 AudioContext 객체 생성 및 초기 옥타브 설정
 window.addEventListener('load', (event) => {
   audioCtx = new AudioContext();
@@ -195,7 +192,6 @@ window.addEventListener('keydown', (event) => {
   octave_set(octave_base);
 });
 
-
 /*
 // Mouse Clickable
 const MouseClickRadioBtn = document.querySelector('#clickableBtn');
@@ -219,81 +215,74 @@ const playing_keys = {}; // 현재 연주중인 키 저장(중복 입력 방지)
 const oscillatorNodes = {}; // oscillatorNode 임시 저장 객체
 const gainNodes = {}; // gainNodes 임시 저장 객체
 
-
 // Sound Methods
-function startSound(event, key){
-    //  연주 중으로 상태 표시 (+키 중복 입력 방지)
-    playing += 1;
-    playing_keys[event.key] = true;
+function startSound(event, key) {
+  //  연주 중으로 상태 표시 (+키 중복 입력 방지)
+  playing += 1;
+  playing_keys[event.key] = true;
 
-    // startEffect(event, key);
+  // startEffect(event, key);
 
-    // oscillatorNode. 전기 진동을 일으키는 노드 생성 및 oscillatorNodes 객체에 업데이트
-    o = audioCtx.createOscillator();
-    oscillatorNodes[key.dataset.code] = o;
+  // oscillatorNode. 전기 진동을 일으키는 노드 생성 및 oscillatorNodes 객체에 업데이트
+  o = audioCtx.createOscillator();
+  oscillatorNodes[key.dataset.code] = o;
 
-    // gainNode. 볼륨을 조절하는 노드 생성 및 gainNodes 객체에 업데이트
-    g = audioCtx.createGain();
-    gainNodes[key.dataset.code] = g;
+  // gainNode. 볼륨을 조절하는 노드 생성 및 gainNodes 객체에 업데이트
+  g = audioCtx.createGain();
+  gainNodes[key.dataset.code] = g;
 
-    // key의 data-code 속성 값을 주파수에 할당(어떤 음을 낼 지 결정)
-    o.frequency.value = noteValues[key.dataset.code];
-    // 미리 정한 설정 적용(같은 주파수더라도 어떤 종류의 소리를 낼 지)
-    o.type = oscillatorType;
-    // oscillatorNode와 gainNode 연결
-    o.connect(g);
+  // key의 data-code 속성 값을 주파수에 할당(어떤 음을 낼 지 결정)
+  o.frequency.value = noteValues[key.dataset.code];
+  // 미리 정한 설정 적용(같은 주파수더라도 어떤 종류의 소리를 낼 지)
+  o.type = oscillatorType;
+  // oscillatorNode와 gainNode 연결
+  o.connect(g);
 
-    // volume 설정
-    g.gain.setValueAtTime(volume, audioCtx.currentTime);
-    // gainNode를 destination(소리가 최종적으로 render될 곳)가 연결
-    g.connect(audioCtx.destination);
+  // volume 설정
+  g.gain.setValueAtTime(volume, audioCtx.currentTime);
+  // gainNode를 destination(소리가 최종적으로 render될 곳)가 연결
+  g.connect(audioCtx.destination);
 
-    // 진동 발생! (파라미터는 소리 발생 시작 시점)
-    o.start(audioCtx.currentTime);
-
+  // 진동 발생! (파라미터는 소리 발생 시작 시점)
+  o.start(audioCtx.currentTime);
 }
 
-function stopSound(event, key){
-    // 이미 만들어진, key에 해당하는 oscillatorNode와 gainNode 할당
-    o = oscillatorNodes[key.dataset.code];
-    g = gainNodes[key.dataset.code];
-    // 서서히 소리가 작아지는 효과
-    g.gain.exponentialRampToValueAtTime(0.000001, audioCtx.currentTime + pedal);
-    // 아래 코드는 뚝 끊긴다.
-    // o.stop(audioCtx.currentTime + pedal);
-    // 키를 뗀 후에는 다시 'keydown' 이벤트를 받을 수 있도록 상태 변경
-    playing_keys[event.key] = false;
-    playing -= 1;
+function stopSound(event, key) {
+  // 이미 만들어진, key에 해당하는 oscillatorNode와 gainNode 할당
+  o = oscillatorNodes[key.dataset.code];
+  g = gainNodes[key.dataset.code];
+  // 서서히 소리가 작아지는 효과
+  g.gain.exponentialRampToValueAtTime(0.000001, audioCtx.currentTime + pedal);
+  // 아래 코드는 뚝 끊긴다.
+  // o.stop(audioCtx.currentTime + pedal);
+  // 키를 뗀 후에는 다시 'keydown' 이벤트를 받을 수 있도록 상태 변경
+  playing_keys[event.key] = false;
+  playing -= 1;
 }
 
 // Effect Methods
-function startEffect(event, key){
-    // 아래 효과 줄 요소 (light 클래스를 가진 요소 중 현재 선택된 key와 data-key 값이 같은 요소 선택)
-    let effect = document.querySelector(
-      `.light[data-key="${key.dataset.key}"]`
-    );
+function startEffect(event, key) {
+  // 아래 효과 줄 요소 (light 클래스를 가진 요소 중 현재 선택된 key와 data-key 값이 같은 요소 선택)
+  let effect = document.querySelector(`.light[data-key="${key.dataset.key}"]`);
 
-    // 해당 키 노드에 'active_key' class 추가하여 활성 상태 시각화
-    key.classList.add('active_key');
+  // 해당 키 노드에 'active_key' class 추가하여 활성 상태 시각화
+  key.classList.add('active_key');
 
-    if (effect) {
-      // 키 아래 효과주기 위해 클래스 추가
-      effect.classList.remove('animate__fadeOut');
-      effect.classList.add('animate__animated');
-      effect.classList.add('animate__fadeIn');
-      effect.classList.add('active_key');
-    }
-
+  if (effect) {
+    // 키 아래 효과주기 위해 클래스 추가
+    effect.classList.remove('animate__fadeOut');
+    effect.classList.add('animate__animated');
+    effect.classList.add('animate__fadeIn');
+    effect.classList.add('active_key');
+  }
 }
 
-function stopEffect(event, key){
+function stopEffect(event, key) {
   // 해당 키 노드에서 'active_key' class 제거하여 시각화 효과 제거
   key.classList.remove('active_key');
 
   // 아래 효과 뺄 요소 (light 클래스를 가진 요소 중 현재 선택된 key와 data-key 값이 같은 요소 선택)
-  let effect = document.querySelector(
-    `.light[data-key="${key.dataset.key}"]`
-  );
+  let effect = document.querySelector(`.light[data-key="${key.dataset.key}"]`);
 
   if (effect) {
     // 아래 효과 빼기 위해 클래스 제거 및 추가
@@ -301,14 +290,10 @@ function stopEffect(event, key){
     effect.classList.add('animate__fadeOut');
     // effect.classList.remove('active_key');
   }
-
-
 }
-
 
 // 키보드로 키를 누르면 키에 해당하는 소리가 남
 window.addEventListener('keydown', (event) => {
-  
   // 속성이 data-key, 값이 event.key인 요소
   // event.code 프로퍼티가 Backslash(\), Quote('), Quote(")인 경우
   // 예외로 data - key의 값이 event.code인 요소를 선택
@@ -401,10 +386,6 @@ keys.forEach((keyElement) => {
 });
 */
 
-
-
-
-
 /**
  * 내용이 길어서 아래에 몰아놓은 값들
  * 키보드 배치
@@ -457,7 +438,7 @@ const upperkeys = `
   <div data-key="/" data-code="B3" class="octave2 key">
     <span class="keyboard">/</span>
   </div>
-`
+`;
 
 // 키보드 아래 2줄
 const lowerkeys = `
@@ -521,13 +502,18 @@ const lowerkeys = `
   <div data-key="]" data-code="G5" class="octave4 key">
     <span class="keyboard">]</span>
   </div>
-`
+`;
 
 // 1줄 배치
-const oneLine = `<div class="keys">` + upperkeys + lowerkeys + `</div>`
+const oneLine = `<div class="keys">` + upperkeys + lowerkeys + `</div>`;
 
 // 2줄 배치
-const twoLines = `<div class="keys">` + lowerkeys + `</div><div class="keys">` + upperkeys + `</div>`
+const twoLines =
+  `<div class="keys">` +
+  lowerkeys +
+  `</div><div class="keys">` +
+  upperkeys +
+  `</div>`;
 
 // 각 음에 해당하는 실제 주파수
 const noteValues = {
