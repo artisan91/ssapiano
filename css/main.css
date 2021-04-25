@@ -21,46 +21,48 @@ header {
 
 /* 한 줄의 건반 영역 */
 .keys {
+  position: relative;
   display: block;
   width: 100%;
   height: 200px;
   max-width: 1000px;
-  position: relative;
   margin: 20px auto;
   background-image: url('../images/wood.jpg');
 }
 
 .key {
   position: relative;
-  border: 2px solid black;
+  display: inline-block;
+
+  box-sizing: border-box;
+  /* border: 2px solid black; */
   border-radius: .5rem;
   transition: all .07s ease;
-  display: inline-block;
-  box-sizing: border-box;
   z-index: 2;
 }
 
-.key:not(.sharp) {
-  display: inline-block;
-  position: relative;
-  width: 7%;
-  height: 80%;
-
-  left: 2%;
-  margin-right: -3px;
-  background: ivory;
-  z-index: 1;    
-}
-
+/* one line */
 .key.sharp {
   position: absolute;
-  width: 4%;
+  width: 2%;
   height: 50%;
 
   background: #000;
   color: #eee;
   top: 0;
   z-index: 2;
+}
+
+.key:not(.sharp) {
+  position: relative;
+  display: inline-block;
+  width: 3.5%;
+  height: 80%;
+
+  left: 1%;
+  margin-right: -3px;
+  background: ivory;
+  z-index: 1;    
 }
 
 .keyboard {
@@ -87,7 +89,7 @@ h5 {
   margin: 50px auto;
 }
 
-.sound_controller {
+.controller {
   display: flex;
   justify-content: space-around;
 }
