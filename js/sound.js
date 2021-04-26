@@ -41,6 +41,13 @@ oneLineBtn.addEventListener(
     });
 
     octave_set(octave_base);
+
+    // 모든 건반 요소를 선택한 유사 배열 갱신
+    keys = document.querySelectorAll('.key');
+    // 마우스 연주 관련 이벤트리스너 재등록
+    registerMousedownPlay(keys);
+    registerMouseupStop(keys);
+    registerMouseleaveStop(keys);
   },
   false
 );
@@ -63,6 +70,13 @@ twoLinesBtn.addEventListener(
     });
 
     octave_set(octave_base);
+
+    // 모든 건반 요소를 선택한 유사 배열 갱신
+    keys = document.querySelectorAll('.key');
+    // 마우스 연주 관련 이벤트리스너 재등록
+    registerMousedownPlay(keys);
+    registerMouseupStop(keys);
+    registerMouseleaveStop(keys);
   },
   false
 );
@@ -341,58 +355,66 @@ window.addEventListener('keyup', (event) => {
   stopEffect(event, key);
 });
 
-/* 마우스 클릭으로 연주하기
+// 마우스 클릭으로 연주하기
 
-// 마우스로 키를 누르는 동안 키에 해당하는 소리가 남
-keys.forEach((keyElement) => {
-  keyElement.addEventListener('mousedown', (event) => {
-    // 마우스가 클릭한 key에 해당하는 li 요소 선택
-    // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
-    let key = event.currentTarget;
+// 마우스로 키를 누르는 동안 키에 해당하는 소리가 나도록 모든 키에 이벤트리스너 등록
+function registerMousedownPlay(keys) {
+  keys.forEach((keyElement) => {
+    keyElement.addEventListener('mousedown', (event) => {
+      // 마우스가 클릭한 key에 해당하는 li 요소 선택
+      // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
+      let key = event.currentTarget;
 
-    // 해당 키가 이미 연주중인 키라면 return
-    if (playing_keys[event.key]) {
-      return;
-    }
-    startSound(event, key);
-    startEffect(event, key);
+      // 해당 키가 이미 연주중인 키라면 return
+      if (playing_keys[event.key]) {
+        return;
+      }
+      startSound(event, key);
+      startEffect(event, key);
+    });
   });
-});
+}
+registerMousedownPlay(keys);
 
-// 마우스를 키에서 떼면 소리가 점점 감소하다가 멈춤
-keys.forEach((keyElement) => {
-  keyElement.addEventListener('mouseup', (event) => {
-    // 마우스를 뗀 key에 해당하는 li 요소 선택
-    // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
-    let key = event.currentTarget;
+// 마우스를 키에서 떼면 소리가 점점 감소하다가 멈추도록 모든 키에 이벤트리스너 등록
+function registerMouseupStop(keys) {
+  keys.forEach((keyElement) => {
+    keyElement.addEventListener('mouseup', (event) => {
+      // 마우스를 뗀 key에 해당하는 li 요소 선택
+      // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
+      let key = event.currentTarget;
 
-    // 연주 중이 아닌 경우 바로 리턴
-    if (!playing_keys[event.key]) {
-      return;
-    }
+      // 연주 중이 아닌 경우 바로 리턴
+      if (!playing_keys[event.key]) {
+        return;
+      }
 
-    stopSound(event, key);
-    stopEffect(event, key);
+      stopSound(event, key);
+      stopEffect(event, key);
+    });
   });
-});
+}
+registerMouseupStop(keys);
 
-// 마우스를 키 밖으로 이동하면 소리가 점점 감소하다가 멈춤
-keys.forEach((keyElement) => {
-  keyElement.addEventListener('mouseleave', (event) => {
-    // 마우스를 뗀 key에 해당하는 li 요소 선택
-    // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
-    let key = event.currentTarget;
+// 마우스를 키 밖으로 이동하면 소리가 점점 감소하다가 멈추도록 모든 키에 이벤트리스너 등록
+function registerMouseleaveStop(keys) {
+  keys.forEach((keyElement) => {
+    keyElement.addEventListener('mouseleave', (event) => {
+      // 마우스를 뗀 key에 해당하는 li 요소 선택
+      // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
+      let key = event.currentTarget;
 
-    // 연주 중이 아닌 경우 바로 리턴
-    if (!playing_keys[event.key]) {
-      return;
-    }
+      // 연주 중이 아닌 경우 바로 리턴
+      if (!playing_keys[event.key]) {
+        return;
+      }
 
-    stopSound(event, key);
-    stopEffect(event, key);
+      stopSound(event, key);
+      stopEffect(event, key);
+    });
   });
-});
-*/
+}
+registerMouseleaveStop(keys);
 
 /**
  * 내용이 길어서 아래에 몰아놓은 값들
