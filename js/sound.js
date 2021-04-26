@@ -60,9 +60,9 @@ twoLinesBtn.addEventListener(
     notSharpKeys.forEach((notSharpKey) => {
       notSharpKey.style.width = '7%';
       notSharpKey.style.left = '2%';
-
-      octave_set(octave_base);
     });
+
+    octave_set(octave_base);
   },
   false
 );
