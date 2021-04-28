@@ -17,202 +17,199 @@
  */
 
 // Key Arranger
-const Main = document.getElementById('main');
-const oneLineBtn = document.getElementById('oneLineBtn');
-const twoLinesBtn = document.getElementById('twoLinesBtn');
-let sharpKeys;
-let notSharpKeys;
+const Main = document.getElementById('main')
+const oneLineBtn = document.getElementById('oneLineBtn')
+const twoLinesBtn = document.getElementById('twoLinesBtn')
+let sharpKeys
+let notSharpKeys
 
 // 한 줄
 oneLineBtn.addEventListener(
   'click',
   function () {
-    Main.innerHTML = oneLine;
+    Main.innerHTML = oneLine
 
-    sharpKeys = document.querySelectorAll('.key.sharp'); // 흑건
+    sharpKeys = document.querySelectorAll('.key.sharp') // 흑건
     sharpKeys.forEach((sharpKey) => {
-      sharpKey.style.width = '2.6%';
-    });
+      sharpKey.style.width = '2.6%'
+    })
 
-    notSharpKeys = document.querySelectorAll('.key:not(.sharp)'); // 백건
+    notSharpKeys = document.querySelectorAll('.key:not(.sharp)') // 백건
     notSharpKeys.forEach((notSharpKey) => {
-      notSharpKey.style.width = '4%';
-      notSharpKey.style.left = '1.3%';
-    });
+      notSharpKey.style.width = '4%'
+      notSharpKey.style.left = '1.3%'
+    })
 
-    octave_set(octave_base);
+    octave_set(octave_base)
 
     // 모든 건반 요소를 선택한 유사 배열 갱신
-    keys = document.querySelectorAll('.key');
+    keys = document.querySelectorAll('.key')
     // 마우스 연주 관련 이벤트리스너 재등록
-    registerMousedownPlay(keys);
-    registerMouseupStop(keys);
-    registerMouseleaveStop(keys);
+    registerMousedownPlay(keys)
+    registerMouseupStop(keys)
+    registerMouseleaveStop(keys)
   },
   false
-);
+)
 
 // 두 줄
 twoLinesBtn.addEventListener(
   'click',
   function () {
-    Main.innerHTML = twoLines;
+    Main.innerHTML = twoLines
 
-    sharpKeys = document.querySelectorAll('.key.sharp'); // 흑건
+    sharpKeys = document.querySelectorAll('.key.sharp') // 흑건
     sharpKeys.forEach((sharpKey) => {
-      sharpKey.style.width = '4%';
-    });
+      sharpKey.style.width = '4%'
+    })
 
-    notSharpKeys = document.querySelectorAll('.key:not(.sharp)'); // 백건
+    notSharpKeys = document.querySelectorAll('.key:not(.sharp)') // 백건
     notSharpKeys.forEach((notSharpKey) => {
-      notSharpKey.style.width = '7%';
-      notSharpKey.style.left = '2%';
-    });
+      notSharpKey.style.width = '7%'
+      notSharpKey.style.left = '2%'
+    })
 
-    octave_set(octave_base);
+    octave_set(octave_base)
 
     // 모든 건반 요소를 선택한 유사 배열 갱신
-    keys = document.querySelectorAll('.key');
+    keys = document.querySelectorAll('.key')
     // 마우스 연주 관련 이벤트리스너 재등록
-    registerMousedownPlay(keys);
-    registerMouseupStop(keys);
-    registerMouseleaveStop(keys);
+    registerMousedownPlay(keys)
+    registerMouseupStop(keys)
+    registerMouseleaveStop(keys)
   },
   false
-);
+)
 
 // Sound Controller
 // Pedal 조절
-let pedal = 1; // pedal 밟는 효과. 지속시간
-const PedalSlider = document.querySelector('#pedal-bar');
+let pedal = 1 // pedal 밟는 효과. 지속시간
+const PedalSlider = document.querySelector('#pedal-bar')
 
 PedalSlider.addEventListener(
   'input',
   function () {
-    pedal = parseInt(this.value);
+    pedal = parseInt(this.value)
   },
   false
-);
+)
 // Pedal++
 window.addEventListener('keydown', (event) => {
   if (event.code === 'Space') {
-    event.preventDefault(); // 브라우저 기본 동작(화면 아래로 이동) 방지
-    pedal += 7;
-    if (pedal > 8) pedal = 8;
-    PedalSlider.value = pedal;
+    event.preventDefault() // 브라우저 기본 동작(화면 아래로 이동) 방지
+    pedal += 7
+    if (pedal > 8) pedal = 8
+    PedalSlider.value = pedal
   }
-});
+})
 
 window.addEventListener('keyup', (event) => {
   if (event.code === 'Space') {
-    pedal -= 7;
-    if (pedal < 1) pedal = 1;
-    PedalSlider.value = pedal;
+    pedal -= 7
+    if (pedal < 1) pedal = 1
+    PedalSlider.value = pedal
   }
-});
+})
 
 // Volume 조절
-let volume = 0.3; // volume
-const VolumeSlider = document.querySelector('#volume-bar');
+let volume = 0.3 // volume
+const VolumeSlider = document.querySelector('#volume-bar')
 
 VolumeSlider.addEventListener(
   'input',
   function () {
-    volume = parseInt(this.value) / 10;
+    volume = parseInt(this.value) / 10
   },
   false
-);
+)
 
 // Oscillator Type
-let oscillatorType = 'triangle'; // square, triangle, sawtooth
-const OscillatorTypeElement = document.querySelector('#oscillator-select');
+let oscillatorType = 'triangle' // square, triangle, sawtooth
+const OscillatorTypeElement = document.querySelector('#oscillator-select')
 OscillatorTypeElement.addEventListener('input', function () {
-  oscillatorType = this.value;
-});
+  oscillatorType = this.value
+})
 
 // Octave
-let octave_base = 2; // 가장 낮은 옥타브 초기값 = 2
-let octave1_keys;
-let octave2_keys;
-let octave3_keys;
-let octave4_keys;
+let octave_base = 2 // 가장 낮은 옥타브 초기값 = 2
+let octave1_keys
+let octave2_keys
+let octave3_keys
+let octave4_keys
 
 // 가장 낮은 옥타브를 octave_base 값에 맞춰 전체 키 변경
 function octave_set(octave_base) {
-  octave1_keys = document.querySelectorAll('.octave1');
-  octave2_keys = document.querySelectorAll('.octave2');
-  octave3_keys = document.querySelectorAll('.octave3');
-  octave4_keys = document.querySelectorAll('.octave4');
+  octave1_keys = document.querySelectorAll('.octave1')
+  octave2_keys = document.querySelectorAll('.octave2')
+  octave3_keys = document.querySelectorAll('.octave3')
+  octave4_keys = document.querySelectorAll('.octave4')
   octave1_keys.forEach((key) => {
     key.dataset.code =
-      key.dataset.code.slice(0, key.dataset.code.length - 1) + octave_base;
-  });
+      key.dataset.code.slice(0, key.dataset.code.length - 1) + octave_base
+  })
   octave2_keys.forEach((key) => {
     key.dataset.code =
-      key.dataset.code.slice(0, key.dataset.code.length - 1) +
-      (octave_base + 1);
-  });
+      key.dataset.code.slice(0, key.dataset.code.length - 1) + (octave_base + 1)
+  })
   octave3_keys.forEach((key) => {
     key.dataset.code =
-      key.dataset.code.slice(0, key.dataset.code.length - 1) +
-      (octave_base + 2);
-  });
+      key.dataset.code.slice(0, key.dataset.code.length - 1) + (octave_base + 2)
+  })
   octave4_keys.forEach((key) => {
     key.dataset.code =
-      key.dataset.code.slice(0, key.dataset.code.length - 1) +
-      (octave_base + 3);
-  });
+      key.dataset.code.slice(0, key.dataset.code.length - 1) + (octave_base + 3)
+  })
 }
 
 // Octave 조절
-const OctaveSlider = document.querySelector('#octave-bar');
+const OctaveSlider = document.querySelector('#octave-bar')
 OctaveSlider.addEventListener(
   'input',
   function () {
-    octave_base = parseInt(this.value);
-    octave_set(octave_base);
+    octave_base = parseInt(this.value)
+    octave_set(octave_base)
   },
   false
-);
+)
 
 // 페이지 로드 시 AudioContext 객체 생성 및 초기 옥타브 설정
 window.addEventListener('load', (event) => {
-  audioCtx = new AudioContext();
+  audioCtx = new AudioContext()
 
   // 모든 키 옥타브 초기화
-  octave_set(octave_base);
-});
+  octave_set(octave_base)
+})
 
 // Tab 키 비활성화
 window.addEventListener('keydown', (event) => {
   if (event.key === 'Tab') {
-    event.preventDefault();
+    event.preventDefault()
   }
-});
+})
 
 // 좌,우 방향키로 옥타브 조절
 window.addEventListener('keydown', (event) => {
   // 만약 연주중인 키가 있다면 리턴
   if (playing) {
-    return;
+    return
   }
 
   // 각 키보드의 data-code 값 조정
   // 옥타브 범위는 0~7 (이미 경계값일 경우 옥타브 조정 없이 리턴)
   // 가장 낮은 옥타브 값(octave_base)의 범위는 0~(7 - 옥타브 최대 차이)
   if (event.key === 'ArrowLeft' && octave_base > 0) {
-    octave_base--;
-    OctaveSlider.value = octave_base;
+    octave_base--
+    OctaveSlider.value = octave_base
   } else if (event.key === 'ArrowRight' && octave_base < 7 - 3) {
-    octave_base++;
-    OctaveSlider.value = octave_base;
+    octave_base++
+    OctaveSlider.value = octave_base
   } else {
-    return;
+    return
   }
 
   // 모든 키 옥타브 조정
-  octave_set(octave_base);
-});
+  octave_set(octave_base)
+})
 
 /*
 // Mouse Clickable
@@ -229,87 +226,87 @@ MouseClickRadioBtn.addEventListener(
 */
 
 // Sound Generator
-let playing = 0; // 현재 연주 중인 키의 개수
-let audioCtx;
-let keys = document.querySelectorAll('.key'); // 모든 건반 요소
+let playing = 0 // 현재 연주 중인 키의 개수
+let audioCtx
+let keys = document.querySelectorAll('.key') // 모든 건반 요소
 
-const playing_keys = {}; // 현재 연주중인 키 저장(중복 입력 방지)
-const oscillatorNodes = {}; // oscillatorNode 임시 저장 객체
-const gainNodes = {}; // gainNodes 임시 저장 객체
+const playing_keys = {} // 현재 연주중인 키 저장(중복 입력 방지)
+const oscillatorNodes = {} // oscillatorNode 임시 저장 객체
+const gainNodes = {} // gainNodes 임시 저장 객체
 
 // Sound Methods
 function startSound(event, key) {
   //  연주 중으로 상태 표시 (+키 중복 입력 방지)
-  playing += 1;
-  playing_keys[event.key] = true;
+  playing += 1
+  playing_keys[event.key] = true
 
   // startEffect(event, key);
 
   // oscillatorNode. 전기 진동을 일으키는 노드 생성 및 oscillatorNodes 객체에 업데이트
-  o = audioCtx.createOscillator();
-  oscillatorNodes[key.dataset.code] = o;
+  o = audioCtx.createOscillator()
+  oscillatorNodes[key.dataset.code] = o
 
   // gainNode. 볼륨을 조절하는 노드 생성 및 gainNodes 객체에 업데이트
-  g = audioCtx.createGain();
-  gainNodes[key.dataset.code] = g;
+  g = audioCtx.createGain()
+  gainNodes[key.dataset.code] = g
 
   // key의 data-code 속성 값을 주파수에 할당(어떤 음을 낼 지 결정)
-  o.frequency.value = noteValues[key.dataset.code];
+  o.frequency.value = noteValues[key.dataset.code]
   // 미리 정한 설정 적용(같은 주파수더라도 어떤 종류의 소리를 낼 지)
-  o.type = oscillatorType;
+  o.type = oscillatorType
   // oscillatorNode와 gainNode 연결
-  o.connect(g);
+  o.connect(g)
 
   // volume 설정
-  g.gain.setValueAtTime(volume, audioCtx.currentTime);
+  g.gain.setValueAtTime(volume, audioCtx.currentTime)
   // gainNode를 destination(소리가 최종적으로 render될 곳)가 연결
-  g.connect(audioCtx.destination);
+  g.connect(audioCtx.destination)
 
   // 진동 발생! (파라미터는 소리 발생 시작 시점)
-  o.start(audioCtx.currentTime);
+  o.start(audioCtx.currentTime)
 }
 
 function stopSound(event, key) {
   // 이미 만들어진, key에 해당하는 oscillatorNode와 gainNode 할당
-  o = oscillatorNodes[key.dataset.code];
-  g = gainNodes[key.dataset.code];
+  o = oscillatorNodes[key.dataset.code]
+  g = gainNodes[key.dataset.code]
   // 서서히 소리가 작아지는 효과
-  g.gain.exponentialRampToValueAtTime(0.000001, audioCtx.currentTime + pedal);
+  g.gain.exponentialRampToValueAtTime(0.000001, audioCtx.currentTime + pedal)
   // 아래 코드는 뚝 끊긴다.
   // o.stop(audioCtx.currentTime + pedal);
   // 키를 뗀 후에는 다시 'keydown' 이벤트를 받을 수 있도록 상태 변경
-  playing_keys[event.key] = false;
-  playing -= 1;
+  playing_keys[event.key] = false
+  playing -= 1
 }
 
 // Effect Methods
 function startEffect(event, key) {
   // 아래 효과 줄 요소 (light 클래스를 가진 요소 중 현재 선택된 key와 data-key 값이 같은 요소 선택)
-  let effect = document.querySelector(`.light[data-key="${key.dataset.key}"]`);
+  let effect = document.querySelector(`.light[data-key="${key.dataset.key}"]`)
 
   // 해당 키 노드에 'active_key' class 추가하여 활성 상태 시각화
-  key.classList.add('active_key');
+  key.classList.add('active_key')
 
   if (effect) {
     // 키 아래 효과주기 위해 클래스 추가
-    effect.classList.remove('animate__fadeOut');
-    effect.classList.add('animate__animated');
-    effect.classList.add('animate__fadeIn');
-    effect.classList.add('active_key');
+    effect.classList.remove('animate__fadeOut')
+    effect.classList.add('animate__animated')
+    effect.classList.add('animate__fadeIn')
+    effect.classList.add('active_key')
   }
 }
 
 function stopEffect(event, key) {
   // 해당 키 노드에서 'active_key' class 제거하여 시각화 효과 제거
-  key.classList.remove('active_key');
+  key.classList.remove('active_key')
 
   // 아래 효과 뺄 요소 (light 클래스를 가진 요소 중 현재 선택된 key와 data-key 값이 같은 요소 선택)
-  let effect = document.querySelector(`.light[data-key="${key.dataset.key}"]`);
+  let effect = document.querySelector(`.light[data-key="${key.dataset.key}"]`)
 
   if (effect) {
     // 아래 효과 빼기 위해 클래스 제거 및 추가
-    effect.classList.remove('animate__fadeIn');
-    effect.classList.add('animate__fadeOut');
+    effect.classList.remove('animate__fadeIn')
+    effect.classList.add('animate__fadeOut')
     // effect.classList.remove('active_key');
   }
 }
@@ -319,62 +316,62 @@ window.addEventListener('keydown', (event) => {
   // 속성이 data-key, 값이 event.key인 요소
   // event.code 프로퍼티가 Backslash(\), Quote('), Quote(")인 경우
   // 예외로 data - key의 값이 event.code인 요소를 선택
-  let key;
+  let key
   if (event.code === 'Backslash' || event.code === 'Quote') {
-    key = document.querySelector(`.key[data-key="${event.code}"]`);
+    key = document.querySelector(`.key[data-key="${event.code}"]`)
   } else {
-    key = document.querySelector(`.key[data-key="${event.key}"]`);
+    key = document.querySelector(`.key[data-key="${event.key}"]`)
   }
 
   // 해당 키가 존재하지않거나, 이미 연주중인 키라면 return
   if (!key || playing_keys[event.key]) {
-    return;
+    return
   }
 
-  startSound(event, key);
-  startEffect(event, key);
-});
+  startSound(event, key)
+  startEffect(event, key)
+})
 
 // 키보드 키를 떼면 잠시 후 소리가 점점 감소하다가 멈춤
 window.addEventListener('keyup', (event) => {
   // 속성이 data-key, 값이 event.key인 요소
   // event.code 프로퍼티가 Backslash(\), Quote('), Quote(")인 경우
   // 예외로 data - key의 값이 event.code인 요소를 선택
-  let key;
+  let key
   if (event.code === 'Backslash' || event.code === 'Quote') {
-    key = document.querySelector(`.key[data-key="${event.code}"]`);
+    key = document.querySelector(`.key[data-key="${event.code}"]`)
   } else {
-    key = document.querySelector(`.key[data-key="${event.key}"]`);
+    key = document.querySelector(`.key[data-key="${event.key}"]`)
   }
   // 해당 키가 존재하지않으면(입력된 key에 해당하는 미리 만들어 둔 html요소가 없으면) return
   if (!key) {
-    return;
+    return
   }
 
-  stopSound(event, key);
-  stopEffect(event, key);
-});
+  stopSound(event, key)
+  stopEffect(event, key)
+})
 
-// 마우스 클릭으로 연주하기
+// 마우스 클릭 및 터치로 연주하기
 
-// 마우스로 키를 누르는 동안 키에 해당하는 소리가 나도록 모든 키에 이벤트리스너 등록
+// 마우스 클릭 또는 터치로 키를 누르는 동안 키에 해당하는 소리가 나도록 모든 키에 이벤트리스너 등록
 function registerMousedownPlay(keys) {
   keys.forEach((keyElement) => {
     keyElement.addEventListener('mousedown', (event) => {
       // 마우스가 클릭한 key에 해당하는 li 요소 선택
       // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
-      let key = event.currentTarget;
+      let key = event.currentTarget
 
       // 해당 키가 이미 연주중인 키라면 return
       if (playing_keys[event.key]) {
-        return;
+        return
       }
-      startSound(event, key);
-      startEffect(event, key);
-    });
-  });
+      startSound(event, key)
+      startEffect(event, key)
+    })
+  })
 }
-registerMousedownPlay(keys);
+registerMousedownPlay(keys)
 
 // 마우스를 키에서 떼면 소리가 점점 감소하다가 멈추도록 모든 키에 이벤트리스너 등록
 function registerMouseupStop(keys) {
@@ -382,19 +379,19 @@ function registerMouseupStop(keys) {
     keyElement.addEventListener('mouseup', (event) => {
       // 마우스를 뗀 key에 해당하는 li 요소 선택
       // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
-      let key = event.currentTarget;
+      let key = event.currentTarget
 
       // 연주 중이 아닌 경우 바로 리턴
       if (!playing_keys[event.key]) {
-        return;
+        return
       }
 
-      stopSound(event, key);
-      stopEffect(event, key);
-    });
-  });
+      stopSound(event, key)
+      stopEffect(event, key)
+    })
+  })
 }
-registerMouseupStop(keys);
+registerMouseupStop(keys)
 
 // 마우스를 키 밖으로 이동하면 소리가 점점 감소하다가 멈추도록 모든 키에 이벤트리스너 등록
 function registerMouseleaveStop(keys) {
@@ -402,19 +399,19 @@ function registerMouseleaveStop(keys) {
     keyElement.addEventListener('mouseleave', (event) => {
       // 마우스를 뗀 key에 해당하는 li 요소 선택
       // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
-      let key = event.currentTarget;
+      let key = event.currentTarget
 
       // 연주 중이 아닌 경우 바로 리턴
       if (!playing_keys[event.key]) {
-        return;
+        return
       }
 
-      stopSound(event, key);
-      stopEffect(event, key);
-    });
-  });
+      stopSound(event, key)
+      stopEffect(event, key)
+    })
+  })
 }
-registerMouseleaveStop(keys);
+registerMouseleaveStop(keys)
 
 /**
  * 내용이 길어서 아래에 몰아놓은 값들
@@ -468,7 +465,7 @@ const upperkeys = `
   <div data-key="/" data-code="B3" class="octave2 key">
     <span class="keyboard">/</span>
   </div>
-`;
+`
 
 // 키보드 아래 2줄
 const lowerkeys = `
@@ -532,10 +529,10 @@ const lowerkeys = `
   <div data-key="]" data-code="G5" class="octave4 key">
     <span class="keyboard">]</span>
   </div>
-`;
+`
 
 // 1줄 배치
-const oneLine = `<div class="keys">` + upperkeys + lowerkeys + `</div>`;
+const oneLine = `<div class="keys">` + upperkeys + lowerkeys + `</div>`
 
 // 2줄 배치
 const twoLines =
@@ -543,7 +540,7 @@ const twoLines =
   lowerkeys +
   `</div><div class="keys">` +
   upperkeys +
-  `</div>`;
+  `</div>`
 
 // 각 음에 해당하는 실제 주파수
 const noteValues = {
@@ -684,4 +681,4 @@ const noteValues = {
   Bb7: 3729.31,
   B7: 3951.07,
   C8: 4186.01,
-};
+}
