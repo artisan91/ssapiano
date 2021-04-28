@@ -25,7 +25,7 @@ let notSharpKeys
 
 // 한 줄
 oneLineBtn.addEventListener(
-  isTouchDevice ? 'touchstart' : 'click',
+  'click',
   function () {
     Main.innerHTML = oneLine
 
@@ -54,7 +54,7 @@ oneLineBtn.addEventListener(
 
 // 두 줄
 twoLinesBtn.addEventListener(
-  isTouchDevice ? 'touchstart' : 'click',
+  'click',
   function () {
     Main.innerHTML = twoLines
 
