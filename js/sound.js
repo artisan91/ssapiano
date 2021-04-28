@@ -16,6 +16,9 @@
  * 4. using mouse
  */
 
+// 사용자의 기기가 터치 가능한 기기인지 감지
+const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints
+
 // Key Arranger
 const Main = document.getElementById('main')
 const oneLineBtn = document.getElementById('oneLineBtn')
@@ -25,7 +28,7 @@ let notSharpKeys
 
 // 한 줄
 oneLineBtn.addEventListener(
-  'click',
+  isTouchDevice ? 'touchstart' : 'click',
   function () {
     Main.innerHTML = oneLine
 
@@ -54,7 +57,7 @@ oneLineBtn.addEventListener(
 
 // 두 줄
 twoLinesBtn.addEventListener(
-  'click',
+  isTouchDevice ? 'touchstart' : 'click',
   function () {
     Main.innerHTML = twoLines
 
@@ -352,23 +355,26 @@ window.addEventListener('keyup', (event) => {
   stopEffect(event, key)
 })
 
-// 마우스 클릭으로 연주하기
+// 마우스 클릭 및 터치로 연주하기
 
-// 마우스로 키를 누르는 동안 키에 해당하는 소리가 나도록 모든 키에 이벤트리스너 등록
+// 마우스 클릭 또는 터치로 키를 누르는 동안 키에 해당하는 소리가 나도록 모든 키에 이벤트리스너 등록
 function registerMousedownPlay(keys) {
   keys.forEach((keyElement) => {
-    keyElement.addEventListener('mousedown', (event) => {
-      // 마우스가 클릭한 key에 해당하는 li 요소 선택
-      // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
-      let key = event.currentTarget
+    keyElement.addEventListener(
+      isTouchDevice ? 'touchstart' : 'mousedown',
+      (event) => {
+        // 마우스가 클릭한 key에 해당하는 li 요소 선택
+        // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
+        let key = event.currentTarget
 
-      // 해당 키가 이미 연주중인 키라면 return
-      if (playing_keys[event.key]) {
-        return
+        // 해당 키가 이미 연주중인 키라면 return
+        if (playing_keys[event.key]) {
+          return
+        }
+        startSound(event, key)
+        startEffect(event, key)
       }
-      startSound(event, key)
-      startEffect(event, key)
-    })
+    )
   })
 }
 registerMousedownPlay(keys)
@@ -376,19 +382,22 @@ registerMousedownPlay(keys)
 // 마우스를 키에서 떼면 소리가 점점 감소하다가 멈추도록 모든 키에 이벤트리스너 등록
 function registerMouseupStop(keys) {
   keys.forEach((keyElement) => {
-    keyElement.addEventListener('mouseup', (event) => {
-      // 마우스를 뗀 key에 해당하는 li 요소 선택
-      // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
-      let key = event.currentTarget
+    keyElement.addEventListener(
+      isTouchDevice ? 'touchend' : 'mouseup',
+      (event) => {
+        // 마우스를 뗀 key에 해당하는 li 요소 선택
+        // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
+        let key = event.currentTarget
 
-      // 연주 중이 아닌 경우 바로 리턴
-      if (!playing_keys[event.key]) {
-        return
+        // 연주 중이 아닌 경우 바로 리턴
+        if (!playing_keys[event.key]) {
+          return
+        }
+
+        stopSound(event, key)
+        stopEffect(event, key)
       }
-
-      stopSound(event, key)
-      stopEffect(event, key)
-    })
+    )
   })
 }
 registerMouseupStop(keys)
