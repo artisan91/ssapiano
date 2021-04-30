@@ -28,14 +28,16 @@ oneLineBtn.addEventListener(
   'click',
   function () {
     Main.innerHTML = oneLine
+    // 키보드 margin-top 부모의 height에 비례하여 설정
+    setKeysMarginTop()
 
     sharpKeys = document.querySelectorAll('.key.sharp') // 흑건
-    sharpKeys.forEach((sharpKey) => {
+    sharpKeys.forEach(sharpKey => {
       sharpKey.style.width = '2.6%'
     })
 
     notSharpKeys = document.querySelectorAll('.key:not(.sharp)') // 백건
-    notSharpKeys.forEach((notSharpKey) => {
+    notSharpKeys.forEach(notSharpKey => {
       notSharpKey.style.width = '4%'
       notSharpKey.style.left = '1.3%'
     })
@@ -57,14 +59,16 @@ twoLinesBtn.addEventListener(
   'click',
   function () {
     Main.innerHTML = twoLines
+    // 키보드 margin-top 부모의 height에 비례하여 설정
+    setKeysMarginTop()
 
     sharpKeys = document.querySelectorAll('.key.sharp') // 흑건
-    sharpKeys.forEach((sharpKey) => {
+    sharpKeys.forEach(sharpKey => {
       sharpKey.style.width = '4%'
     })
 
     notSharpKeys = document.querySelectorAll('.key:not(.sharp)') // 백건
-    notSharpKeys.forEach((notSharpKey) => {
+    notSharpKeys.forEach(notSharpKey => {
       notSharpKey.style.width = '7%'
       notSharpKey.style.left = '2%'
     })
@@ -94,7 +98,7 @@ PedalSlider.addEventListener(
   false
 )
 // Pedal++
-window.addEventListener('keydown', (event) => {
+window.addEventListener('keydown', event => {
   if (event.code === 'Space') {
     event.preventDefault() // 브라우저 기본 동작(화면 아래로 이동) 방지
     pedal += 7
@@ -103,7 +107,7 @@ window.addEventListener('keydown', (event) => {
   }
 })
 
-window.addEventListener('keyup', (event) => {
+window.addEventListener('keyup', event => {
   if (event.code === 'Space') {
     pedal -= 7
     if (pedal < 1) pedal = 1
@@ -143,19 +147,19 @@ function octave_set(octave_base) {
   octave2_keys = document.querySelectorAll('.octave2')
   octave3_keys = document.querySelectorAll('.octave3')
   octave4_keys = document.querySelectorAll('.octave4')
-  octave1_keys.forEach((key) => {
+  octave1_keys.forEach(key => {
     key.dataset.code =
       key.dataset.code.slice(0, key.dataset.code.length - 1) + octave_base
   })
-  octave2_keys.forEach((key) => {
+  octave2_keys.forEach(key => {
     key.dataset.code =
       key.dataset.code.slice(0, key.dataset.code.length - 1) + (octave_base + 1)
   })
-  octave3_keys.forEach((key) => {
+  octave3_keys.forEach(key => {
     key.dataset.code =
       key.dataset.code.slice(0, key.dataset.code.length - 1) + (octave_base + 2)
   })
-  octave4_keys.forEach((key) => {
+  octave4_keys.forEach(key => {
     key.dataset.code =
       key.dataset.code.slice(0, key.dataset.code.length - 1) + (octave_base + 3)
   })
@@ -173,22 +177,25 @@ OctaveSlider.addEventListener(
 )
 
 // 페이지 로드 시 AudioContext 객체 생성 및 초기 옥타브 설정
-window.addEventListener('load', (event) => {
+window.addEventListener('load', event => {
   audioCtx = new AudioContext()
 
   // 모든 키 옥타브 초기화
   octave_set(octave_base)
+
+  // 키보드 margin-top 부모의 height에 비례하여 설정
+  setKeysMarginTop()
 })
 
 // Tab 키 비활성화
-window.addEventListener('keydown', (event) => {
+window.addEventListener('keydown', event => {
   if (event.key === 'Tab') {
     event.preventDefault()
   }
 })
 
 // 좌,우 방향키로 옥타브 조절
-window.addEventListener('keydown', (event) => {
+window.addEventListener('keydown', event => {
   // 만약 연주중인 키가 있다면 리턴
   if (playing) {
     return
@@ -312,7 +319,7 @@ function stopEffect(event, key) {
 }
 
 // 키보드로 키를 누르면 키에 해당하는 소리가 남
-window.addEventListener('keydown', (event) => {
+window.addEventListener('keydown', event => {
   // 속성이 data-key, 값이 event.key인 요소
   // event.code 프로퍼티가 Backslash(\), Quote('), Quote(")인 경우
   // 예외로 data - key의 값이 event.code인 요소를 선택
@@ -333,7 +340,7 @@ window.addEventListener('keydown', (event) => {
 })
 
 // 키보드 키를 떼면 잠시 후 소리가 점점 감소하다가 멈춤
-window.addEventListener('keyup', (event) => {
+window.addEventListener('keyup', event => {
   // 속성이 data-key, 값이 event.key인 요소
   // event.code 프로퍼티가 Backslash(\), Quote('), Quote(")인 경우
   // 예외로 data - key의 값이 event.code인 요소를 선택
@@ -356,8 +363,8 @@ window.addEventListener('keyup', (event) => {
 
 // 마우스 클릭 또는 터치로 키를 누르는 동안 키에 해당하는 소리가 나도록 모든 키에 이벤트리스너 등록
 function registerMousedownPlay(keys) {
-  keys.forEach((keyElement) => {
-    keyElement.addEventListener('mousedown', (event) => {
+  keys.forEach(keyElement => {
+    keyElement.addEventListener('mousedown', event => {
       // 마우스가 클릭한 key에 해당하는 li 요소 선택
       // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
       let key = event.currentTarget
@@ -375,8 +382,8 @@ registerMousedownPlay(keys)
 
 // 마우스를 키에서 떼면 소리가 점점 감소하다가 멈추도록 모든 키에 이벤트리스너 등록
 function registerMouseupStop(keys) {
-  keys.forEach((keyElement) => {
-    keyElement.addEventListener('mouseup', (event) => {
+  keys.forEach(keyElement => {
+    keyElement.addEventListener('mouseup', event => {
       // 마우스를 뗀 key에 해당하는 li 요소 선택
       // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
       let key = event.currentTarget
@@ -395,8 +402,8 @@ registerMouseupStop(keys)
 
 // 마우스를 키 밖으로 이동하면 소리가 점점 감소하다가 멈추도록 모든 키에 이벤트리스너 등록
 function registerMouseleaveStop(keys) {
-  keys.forEach((keyElement) => {
-    keyElement.addEventListener('mouseleave', (event) => {
+  keys.forEach(keyElement => {
+    keyElement.addEventListener('mouseleave', event => {
       // 마우스를 뗀 key에 해당하는 li 요소 선택
       // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
       let key = event.currentTarget
@@ -412,6 +419,16 @@ function registerMouseleaveStop(keys) {
   })
 }
 registerMouseleaveStop(keys)
+
+// 키보드 요소들의 margin-top을 부모의 높이에 맞게 수정해주는 함수
+function setKeysMarginTop() {
+  const keys = document.querySelectorAll('.key')
+  keys.forEach(key => {
+    key.style.marginTop = `${
+      key.parentElement.getBoundingClientRect().height * 0.13
+    }px`
+  })
+}
 
 /**
  * 내용이 길어서 아래에 몰아놓은 값들
