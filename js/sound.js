@@ -413,6 +413,52 @@ function registerMouseleaveStop(keys) {
 }
 registerMouseleaveStop(keys)
 
+/*
+1. 버튼을 누를 때마다 button 태그 안의 이모티콘 바꿔주기
+2. 변수를 통해(metronomeOn) 메트로놈을 on/off 제어
+3. setInterval의 실행 함수가 동작할 때 마다 카운트하여 비트 조절
+*/
+
+const submitElement = document.querySelector('#metronomeBtn')
+
+// metronome on off를 알려줄 변수
+let metronomeOn = false
+const base = 60000
+// audio 소리 선택
+const beatBoom = document.querySelector('#boom')
+const beatTink = document.querySelector('#tink')
+const beatTom = document.querySelector('#tom')
+const beatSnare = document.querySelector('#snare')
+
+submitElement.addEventListener('click', function() {
+  let cnt = -1
+  if (!metronomeOn) {
+    metronomeOn = true
+    this.innerText = '⏹️'
+  } else {
+    metronomeOn = false
+    this.innerText = '▶️'
+  }
+  const metronomeBeatElement = document.querySelector('#beat')
+  const metronomeBeat = metronomeBeatElement.value
+  let beat = base/metronomeBeat
+  let interval = setInterval(function() {
+    cnt++
+    if (metronomeOn) {
+      if (cnt%4) {
+        beatSnare.currentTime = 0
+        beatSnare.play()
+      } else {
+        beatBoom.currentTime = 0
+        beatBoom.play()
+      }
+      
+    } else {
+      clearInterval(interval)
+    }
+  }, beat)
+})
+
 /**
  * 내용이 길어서 아래에 몰아놓은 값들
  * 키보드 배치
