@@ -21,6 +21,10 @@ header {
   margin: auto;
 }
 
+::selection {
+  background: transparent;
+}
+
 #documentation {
   position: absolute;
   top: 10px;
