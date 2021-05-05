@@ -64,6 +64,8 @@ header {
   color: #eee;
   top: 0;
   z-index: 2;
+  -webkit-box-shadow: 5px 5px 10px 2px rgba(30, 18, 21, 0.13);
+  box-shadow: 5px 5px 10px 2px rgba(30, 18, 21, 0.13);
 }
 
 .key:not(.sharp) {
