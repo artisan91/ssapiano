@@ -32,6 +32,17 @@ header {
   right: 10px;
 }
 
+#documentation__link {
+  color: whitesmoke;
+  text-decoration: none;
+  transition: all 300ms ease-in;
+}
+
+#documentation__link:hover {
+  font-size: 110%;
+  color: #74b7ff;
+}
+
 /* 한 줄의 건반 영역 */
 .keys {
   position: relative;
