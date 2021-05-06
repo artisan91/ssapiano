@@ -89,6 +89,8 @@ header {
   margin-right: -3px;
   background: ivory;
   z-index: 1;
+  -webkit-box-shadow: 2px 7px 7px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 2px 7px 7px 5px rgba(0, 0, 0, 0.3);
 }
 
 .keyboard {
