@@ -44,7 +44,7 @@ header {
 }
 
 /* 한 줄의 건반 영역 */
-.keys {
+.keyboard {
   position: relative;
   display: block;
   width: 100%;

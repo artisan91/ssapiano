@@ -23,6 +23,9 @@ const twoLinesBtn = document.getElementById('twoLinesBtn')
 let sharpKeys
 let notSharpKeys
 
+window.addEventListener('dragstart', (e) => {
+  e.preventDefault()
+})
 // 한 줄
 oneLineBtn.addEventListener(
   'click',
@@ -46,10 +49,13 @@ oneLineBtn.addEventListener(
 
     // 모든 건반 요소를 선택한 유사 배열 갱신
     keys = document.querySelectorAll('.key')
+    // 모든 건반들의 부모 요소 갱신
+    keyboard = document.querySelector('.keyboard')
+
     // 마우스 연주 관련 이벤트리스너 재등록
-    registerMousedownPlay(keys)
-    registerMouseupStop(keys)
-    registerMouseleaveStop(keys)
+    registerMousedownPlay()
+    registerMouseupStop()
+    registerMouseoutStop()
   },
   false
 )
@@ -77,10 +83,12 @@ twoLinesBtn.addEventListener(
 
     // 모든 건반 요소를 선택한 유사 배열 갱신
     keys = document.querySelectorAll('.key')
+    // 모든 건반들의 부모 요소 갱신
+    keyboard = document.querySelector('.keyboard')
     // 마우스 연주 관련 이벤트리스너 재등록
-    registerMousedownPlay(keys)
-    registerMouseupStop(keys)
-    registerMouseleaveStop(keys)
+    registerMousedownPlay()
+    registerMouseupStop()
+    registerMouseoutStop()
   },
   false
 )
@@ -236,18 +244,17 @@ MouseClickRadioBtn.addEventListener(
 let playing = 0 // 현재 연주 중인 키의 개수
 let audioCtx
 let keys = document.querySelectorAll('.key') // 모든 건반 요소
+let keyboard = document.querySelector('.keyboard') // 모든 건반들의 부모 요소
 
 const playing_keys = {} // 현재 연주중인 키 저장(중복 입력 방지)
 const oscillatorNodes = {} // oscillatorNode 임시 저장 객체
 const gainNodes = {} // gainNodes 임시 저장 객체
 
 // Sound Methods
-function startSound(event, key) {
+function startSound(key) {
   //  연주 중으로 상태 표시 (+키 중복 입력 방지)
   playing += 1
-  playing_keys[event.key] = true
-
-  // startEffect(event, key);
+  playing_keys[key.dataset.code] = true
 
   // oscillatorNode. 전기 진동을 일으키는 노드 생성 및 oscillatorNodes 객체에 업데이트
   o = audioCtx.createOscillator()
@@ -273,7 +280,7 @@ function startSound(event, key) {
   o.start(audioCtx.currentTime)
 }
 
-function stopSound(event, key) {
+function stopSound(key) {
   // 이미 만들어진, key에 해당하는 oscillatorNode와 gainNode 할당
   o = oscillatorNodes[key.dataset.code]
   g = gainNodes[key.dataset.code]
@@ -282,12 +289,12 @@ function stopSound(event, key) {
   // 아래 코드는 뚝 끊긴다.
   // o.stop(audioCtx.currentTime + pedal);
   // 키를 뗀 후에는 다시 'keydown' 이벤트를 받을 수 있도록 상태 변경
-  playing_keys[event.key] = false
+  playing_keys[key.dataset.code] = false
   playing -= 1
 }
 
 // Effect Methods
-function startEffect(event, key) {
+function startEffect(key) {
   // 아래 효과 줄 요소 (light 클래스를 가진 요소 중 현재 선택된 key와 data-key 값이 같은 요소 선택)
   let effect = document.querySelector(`.light[data-key="${key.dataset.key}"]`)
 
@@ -303,7 +310,7 @@ function startEffect(event, key) {
   }
 }
 
-function stopEffect(event, key) {
+function stopEffect(key) {
   // 해당 키 노드에서 'active_key' class 제거하여 시각화 효과 제거
   key.classList.remove('active_key')
 
@@ -331,12 +338,12 @@ window.addEventListener('keydown', (event) => {
   }
 
   // 해당 키가 존재하지않거나, 이미 연주중인 키라면 return
-  if (!key || playing_keys[event.key]) {
+  if (!key || playing_keys[key.dataset.code]) {
     return
   }
 
-  startSound(event, key)
-  startEffect(event, key)
+  startSound(key)
+  startEffect(key)
 })
 
 // 키보드 키를 떼면 잠시 후 소리가 점점 감소하다가 멈춤
@@ -355,70 +362,87 @@ window.addEventListener('keyup', (event) => {
     return
   }
 
-  stopSound(event, key)
-  stopEffect(event, key)
+  stopSound(key)
+  stopEffect(key)
 })
 
 // 마우스 클릭 및 터치로 연주하기
 
 // 마우스 클릭 또는 터치로 키를 누르는 동안 키에 해당하는 소리가 나도록 모든 키에 이벤트리스너 등록
-function registerMousedownPlay(keys) {
-  keys.forEach((keyElement) => {
-    keyElement.addEventListener('mousedown', (event) => {
-      // 마우스가 클릭한 key에 해당하는 li 요소 선택
-      // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
-      let key = event.currentTarget
-
-      // 해당 키가 이미 연주중인 키라면 return
-      if (playing_keys[event.key]) {
+function registerMousedownPlay() {
+  const keyboards = document.querySelectorAll('.keyboard')
+  keyboards.forEach((keyboard) => {
+    keyboard.addEventListener('mousedown', (event) => {
+      let key
+      if (event.target.classList.contains('key')) {
+        key = event.target
+      } else if (event.target.classList.contains('key__annotation')) {
+        key = event.target.parentElement
+      } else {
         return
       }
-      startSound(event, key)
-      startEffect(event, key)
+      // 해당 키가 이미 연주중인 키라면 return
+      if (playing_keys[key.dataset.code]) {
+        return
+      }
+      startSound(key)
+      startEffect(key)
     })
   })
 }
-registerMousedownPlay(keys)
+registerMousedownPlay()
 
 // 마우스를 키에서 떼면 소리가 점점 감소하다가 멈추도록 모든 키에 이벤트리스너 등록
-function registerMouseupStop(keys) {
-  keys.forEach((keyElement) => {
-    keyElement.addEventListener('mouseup', (event) => {
-      // 마우스를 뗀 key에 해당하는 li 요소 선택
-      // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
-      let key = event.currentTarget
-
-      // 연주 중이 아닌 경우 바로 리턴
-      if (!playing_keys[event.key]) {
+function registerMouseupStop() {
+  const keyboards = document.querySelectorAll('.keyboard')
+  keyboards.forEach((keyboard) => {
+    keyboard.addEventListener('mouseup', (event) => {
+      let key
+      if (event.target.classList.contains('key')) {
+        key = event.target
+      } else if (event.target.classList.contains('key__annotation')) {
+        key = event.target.parentElement
+      } else {
         return
       }
-
-      stopSound(event, key)
-      stopEffect(event, key)
+      // 해당 키가 연주중이 아니라면 return
+      if (!playing_keys[key.dataset.code]) {
+        return
+      }
+      stopSound(key)
+      stopEffect(key)
     })
   })
 }
-registerMouseupStop(keys)
+registerMouseupStop()
 
 // 마우스를 키 밖으로 이동하면 소리가 점점 감소하다가 멈추도록 모든 키에 이벤트리스너 등록
-function registerMouseleaveStop(keys) {
-  keys.forEach((keyElement) => {
-    keyElement.addEventListener('mouseleave', (event) => {
-      // 마우스를 뗀 key에 해당하는 li 요소 선택
-      // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
-      let key = event.currentTarget
-
-      // 연주 중이 아닌 경우 바로 리턴
-      if (!playing_keys[event.key]) {
+function registerMouseoutStop() {
+  const keyboards = document.querySelectorAll('.keyboard')
+  keyboards.forEach((keyboard) => {
+    keyboard.addEventListener('mouseout', (event) => {
+      let key
+      if (event.target.classList.contains('key')) {
+        key = event.target
+      } else if (event.target.classList.contains('key__annotation')) {
+        key = event.target.parentElement
+        // 키 내부에서 움직일 때는 무시
+        if (event.relatedTarget === key) {
+          return
+        }
+      } else {
         return
       }
-
-      stopSound(event, key)
-      stopEffect(event, key)
+      // 해당 키가 연주중이 아니라면 return
+      if (!playing_keys[key.dataset.code]) {
+        return
+      }
+      stopSound(key)
+      stopEffect(key)
     })
   })
 }
-registerMouseleaveStop(keys)
+registerMouseoutStop()
 
 // 키보드 요소들의 margin-top을 부모의 높이에 맞게 수정해주는 함수
 function setKeysMarginTop() {
@@ -549,13 +573,13 @@ const lowerkeys = `
 `
 
 // 1줄 배치
-const oneLine = `<div class="keys">` + upperkeys + lowerkeys + `</div>`
+const oneLine = `<div class="keyboard">` + upperkeys + lowerkeys + `</div>`
 
 // 2줄 배치
 const twoLines =
-  `<div class="keys">` +
+  `<div class="keyboard">` +
   lowerkeys +
-  `</div><div class="keys">` +
+  `</div><div class="keyboard">` +
   upperkeys +
   `</div>`
 
