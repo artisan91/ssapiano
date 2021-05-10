@@ -32,12 +32,12 @@ oneLineBtn.addEventListener(
     setKeysMarginTop()
 
     sharpKeys = document.querySelectorAll('.key.sharp') // 흑건
-    sharpKeys.forEach(sharpKey => {
+    sharpKeys.forEach((sharpKey) => {
       sharpKey.style.width = '2.6%'
     })
 
     notSharpKeys = document.querySelectorAll('.key:not(.sharp)') // 백건
-    notSharpKeys.forEach(notSharpKey => {
+    notSharpKeys.forEach((notSharpKey) => {
       notSharpKey.style.width = '4%'
       notSharpKey.style.left = '1.3%'
     })
@@ -63,12 +63,12 @@ twoLinesBtn.addEventListener(
     setKeysMarginTop()
 
     sharpKeys = document.querySelectorAll('.key.sharp') // 흑건
-    sharpKeys.forEach(sharpKey => {
+    sharpKeys.forEach((sharpKey) => {
       sharpKey.style.width = '4%'
     })
 
     notSharpKeys = document.querySelectorAll('.key:not(.sharp)') // 백건
-    notSharpKeys.forEach(notSharpKey => {
+    notSharpKeys.forEach((notSharpKey) => {
       notSharpKey.style.width = '7%'
       notSharpKey.style.left = '2%'
     })
@@ -98,7 +98,7 @@ PedalSlider.addEventListener(
   false
 )
 // Pedal++
-window.addEventListener('keydown', event => {
+window.addEventListener('keydown', (event) => {
   if (event.code === 'Space') {
     event.preventDefault() // 브라우저 기본 동작(화면 아래로 이동) 방지
     pedal += 7
@@ -107,7 +107,7 @@ window.addEventListener('keydown', event => {
   }
 })
 
-window.addEventListener('keyup', event => {
+window.addEventListener('keyup', (event) => {
   if (event.code === 'Space') {
     pedal -= 7
     if (pedal < 1) pedal = 1
@@ -147,19 +147,19 @@ function octave_set(octave_base) {
   octave2_keys = document.querySelectorAll('.octave2')
   octave3_keys = document.querySelectorAll('.octave3')
   octave4_keys = document.querySelectorAll('.octave4')
-  octave1_keys.forEach(key => {
+  octave1_keys.forEach((key) => {
     key.dataset.code =
       key.dataset.code.slice(0, key.dataset.code.length - 1) + octave_base
   })
-  octave2_keys.forEach(key => {
+  octave2_keys.forEach((key) => {
     key.dataset.code =
       key.dataset.code.slice(0, key.dataset.code.length - 1) + (octave_base + 1)
   })
-  octave3_keys.forEach(key => {
+  octave3_keys.forEach((key) => {
     key.dataset.code =
       key.dataset.code.slice(0, key.dataset.code.length - 1) + (octave_base + 2)
   })
-  octave4_keys.forEach(key => {
+  octave4_keys.forEach((key) => {
     key.dataset.code =
       key.dataset.code.slice(0, key.dataset.code.length - 1) + (octave_base + 3)
   })
@@ -177,7 +177,7 @@ OctaveSlider.addEventListener(
 )
 
 // 페이지 로드 시 AudioContext 객체 생성 및 초기 옥타브 설정
-window.addEventListener('load', event => {
+window.addEventListener('load', (event) => {
   audioCtx = new AudioContext()
 
   // 모든 키 옥타브 초기화
@@ -188,14 +188,14 @@ window.addEventListener('load', event => {
 })
 
 // Tab 키 비활성화
-window.addEventListener('keydown', event => {
+window.addEventListener('keydown', (event) => {
   if (event.key === 'Tab') {
     event.preventDefault()
   }
 })
 
 // 좌,우 방향키로 옥타브 조절
-window.addEventListener('keydown', event => {
+window.addEventListener('keydown', (event) => {
   // 만약 연주중인 키가 있다면 리턴
   if (playing) {
     return
@@ -319,7 +319,7 @@ function stopEffect(event, key) {
 }
 
 // 키보드로 키를 누르면 키에 해당하는 소리가 남
-window.addEventListener('keydown', event => {
+window.addEventListener('keydown', (event) => {
   // 속성이 data-key, 값이 event.key인 요소
   // event.code 프로퍼티가 Backslash(\), Quote('), Quote(")인 경우
   // 예외로 data - key의 값이 event.code인 요소를 선택
@@ -340,7 +340,7 @@ window.addEventListener('keydown', event => {
 })
 
 // 키보드 키를 떼면 잠시 후 소리가 점점 감소하다가 멈춤
-window.addEventListener('keyup', event => {
+window.addEventListener('keyup', (event) => {
   // 속성이 data-key, 값이 event.key인 요소
   // event.code 프로퍼티가 Backslash(\), Quote('), Quote(")인 경우
   // 예외로 data - key의 값이 event.code인 요소를 선택
@@ -363,8 +363,8 @@ window.addEventListener('keyup', event => {
 
 // 마우스 클릭 또는 터치로 키를 누르는 동안 키에 해당하는 소리가 나도록 모든 키에 이벤트리스너 등록
 function registerMousedownPlay(keys) {
-  keys.forEach(keyElement => {
-    keyElement.addEventListener('mousedown', event => {
+  keys.forEach((keyElement) => {
+    keyElement.addEventListener('mousedown', (event) => {
       // 마우스가 클릭한 key에 해당하는 li 요소 선택
       // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
       let key = event.currentTarget
@@ -382,8 +382,8 @@ registerMousedownPlay(keys)
 
 // 마우스를 키에서 떼면 소리가 점점 감소하다가 멈추도록 모든 키에 이벤트리스너 등록
 function registerMouseupStop(keys) {
-  keys.forEach(keyElement => {
-    keyElement.addEventListener('mouseup', event => {
+  keys.forEach((keyElement) => {
+    keyElement.addEventListener('mouseup', (event) => {
       // 마우스를 뗀 key에 해당하는 li 요소 선택
       // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
       let key = event.currentTarget
@@ -402,8 +402,8 @@ registerMouseupStop(keys)
 
 // 마우스를 키 밖으로 이동하면 소리가 점점 감소하다가 멈추도록 모든 키에 이벤트리스너 등록
 function registerMouseleaveStop(keys) {
-  keys.forEach(keyElement => {
-    keyElement.addEventListener('mouseleave', event => {
+  keys.forEach((keyElement) => {
+    keyElement.addEventListener('mouseleave', (event) => {
       // 마우스를 뗀 key에 해당하는 li 요소 선택
       // (li 요소 일부 위치 위에 다른 요소가 존재하기 때문에 currentTarget을 통해 이벤트 버블링 활용)
       let key = event.currentTarget
@@ -423,7 +423,7 @@ registerMouseleaveStop(keys)
 // 키보드 요소들의 margin-top을 부모의 높이에 맞게 수정해주는 함수
 function setKeysMarginTop() {
   const keys = document.querySelectorAll('.key')
-  keys.forEach(key => {
+  keys.forEach((key) => {
     key.style.marginTop = `${
       key.parentElement.getBoundingClientRect().height * 0.13
     }px`
@@ -438,113 +438,113 @@ function setKeysMarginTop() {
 // 키보드 위 2줄
 const upperkeys = `
   <div data-key="x" data-code="A2" class="octave1 key">
-    <span class="keyboard">X</span>
+    <span class="key__annotation">X</span>
   </div>
   <div data-key="d" data-code="A#2" class="octave1 key sharp">
-    <span class="keyboard">D</span>
+    <span class="key__annotation">D</span>
   </div>
   <div data-key="c" data-code="B2" class="octave1 key">
-    <span class="keyboard">C</span>
+    <span class="key__annotation">C</span>
   </div>
   <div data-key="v" data-code="C3" class="octave2 key">
-    <span class="keyboard">V</span>
+    <span class="key__annotation">V</span>
   </div>
   <div data-key="g" data-code="C#3" class="octave2 key sharp"> 
-    <span class="keyboard">G</span>
+    <span class="key__annotation">G</span>
   </div>
   <div data-key="b" data-code="D3" class="octave2 key">
-    <span class="keyboard">B</span>
+    <span class="key__annotation">B</span>
   </div>
   <div data-key="h" data-code="D#3" class="octave2 key sharp">
-    <span class="keyboard">H</span>
+    <span class="key__annotation">H</span>
   </div>
   <div data-key="n" data-code="E3" class="octave2 key">
-    <span class="keyboard">N</span>
+    <span class="key__annotation">N</span>
   </div>
   <div data-key="m" data-code="F3" class="octave2 key">
-    <span class="keyboard">M</span>
+    <span class="key__annotation">M</span>
   </div>
   <div data-key="k" data-code="F#3" class="octave2 key sharp">
-    <span class="keyboard">K</span>
+    <span class="key__annotation">K</span>
   </div>
   <div data-key="," data-code="G3" class="octave2 key">
-    <span class="keyboard">,</span>
+    <span class="key__annotation">,</span>
   </div>
   <div data-key="l" data-code="G#3" class="octave2 key sharp">
-    <span class="keyboard">L</span>
+    <span class="key__annotation">L</span>
   </div>
   <div data-key="." data-code="A3" class="octave2 key">
-    <span class="keyboard">.</span>
+    <span class="key__annotation">.</span>
   </div>
   <div data-key=";" data-code="A#3" class="octave2 key sharp">
-    <span class="keyboard">;</span>
+    <span class="key__annotation">;</span>
   </div>
   <div data-key="/" data-code="B3" class="octave2 key">
-    <span class="keyboard">/</span>
+    <span class="key__annotation">/</span>
   </div>
 `
 
 // 키보드 아래 2줄
 const lowerkeys = `
   <div data-key="q" data-code="C4" class="octave3 key">
-    <span class="keyboard">Q</span>
+    <span class="key__annotation">Q</span>
   </div>
   <div data-key="2" data-code="C#4" class="octave3 key sharp">
-    <span class="keyboard">2</span>
+    <span class="key__annotation">2</span>
   </div>
   <div data-key="w" data-code="D4" class="octave3 key">
-    <span class="keyboard">W</span>
+    <span class="key__annotation">W</span>
   </div>
   <div data-key="3" data-code="D#4" class="octave3 key sharp">
-    <span class="keyboard">3</span>
+    <span class="key__annotation">3</span>
   </div>
   <div data-key="e" data-code="E4" class="octave3 key">
-    <span class="keyboard">E</span>
+    <span class="key__annotation">E</span>
   </div>
   <div data-key="r" data-code="F4" class="octave3 key">
-    <span class="keyboard">R</span>
+    <span class="key__annotation">R</span>
   </div>
   <div data-key="5" data-code="F#4" class="octave3 key sharp">
-    <span class="keyboard">5</span>
+    <span class="key__annotation">5</span>
   </div>
   <div data-key="t" data-code="G4" class="octave3 key">
-    <span class="keyboard">T</span>
+    <span class="key__annotation">T</span>
   </div>
   <div data-key="6" data-code="G#4" class="octave3 key sharp">
-    <span class="keyboard">6</span>
+    <span class="key__annotation">6</span>
   </div>
   <div data-key="y" data-code="A4" class="octave3 key">
-    <span class="keyboard">Y</span>
+    <span class="key__annotation">Y</span>
   </div>
   <div data-key="7" data-code="A#4" class="octave3 key sharp">
-    <span class="keyboard">7</span>
+    <span class="key__annotation">7</span>
   </div>
   <div data-key="u" data-code="B4" class="octave3 key">
-    <span class="keyboard">U</span>
+    <span class="key__annotation">U</span>
   </div>
   <div data-key="i" data-code="C5" class="octave4 key">
-    <span class="keyboard">I</span>
+    <span class="key__annotation">I</span>
   </div>
   <div data-key="9" data-code="C#5" class="octave4 key sharp">
-    <span class="keyboard">9</span>
+    <span class="key__annotation">9</span>
   </div>
   <div data-key="o" data-code="D5" class="octave4 key">
-    <span class="keyboard">O</span>
+    <span class="key__annotation">O</span>
   </div>
   <div data-key="0" data-code="D#5" class="octave4 key sharp">
-    <span class="keyboard">0</span>
+    <span class="key__annotation">0</span>
   </div>
   <div data-key="p" data-code="E5" class="octave4 key">
-    <span class="keyboard">P</span>
+    <span class="key__annotation">P</span>
   </div>
   <div data-key="[" data-code="F5" class="octave4 key">
-    <span class="keyboard">[</span>
+    <span class="key__annotation">[</span>
   </div>
   <div data-key="=" data-code="F#5" class="octave4 key sharp">
-    <span class="keyboard">=</span>
+    <span class="key__annotation">=</span>
   </div>
   <div data-key="]" data-code="G5" class="octave4 key">
-    <span class="keyboard">]</span>
+    <span class="key__annotation">]</span>
   </div>
 `
 
