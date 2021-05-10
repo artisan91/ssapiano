@@ -44,7 +44,7 @@ header {
 }
 
 /* 한 줄의 건반 영역 */
-.keys {
+.keyboard {
   position: relative;
   display: block;
   width: 100%;
@@ -93,7 +93,7 @@ header {
   box-shadow: 2px 7px 7px 5px rgba(0, 0, 0, 0.3);
 }
 
-.keyboard {
+.key__annotation {
   display: block;
   position: absolute;
   bottom: 8px;
