@@ -429,6 +429,12 @@ const beatBoom = document.querySelector('#boom')
 const beatTink = document.querySelector('#tink')
 const beatTom = document.querySelector('#tom')
 const beatSnare = document.querySelector('#snare')
+const metronomeBeatElement = document.querySelector('#beat')
+
+// metronome bpm 입력 시 피아노 소리 발생 방지
+metronomeBeatElement.addEventListener('keydown', function (event) {
+  event.stopPropagation()
+})
 
 submitElement.addEventListener('click', function() {
   let cnt = -1
@@ -439,7 +445,6 @@ submitElement.addEventListener('click', function() {
     metronomeOn = false
     this.innerText = '▶️'
   }
-  const metronomeBeatElement = document.querySelector('#beat')
   const metronomeBeat = metronomeBeatElement.value
   let beat = base/metronomeBeat
   let interval = setInterval(function() {
