@@ -133,6 +133,10 @@ h5 {
   font-size: xx-large;
 }
 
+.metronome {
+  display: block;
+}
+
 #oneLineBtn,
 #twoLinesBtn {
   width: 1.3rem;
